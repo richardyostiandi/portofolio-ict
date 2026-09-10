@@ -586,9 +586,9 @@
                     category: "Olahraga Tim",
                     icon: "fa-futbol",
                     badge: "2x Seminggu",
-                    image: "https://images.unsplash.com/photo-1574629810360-7efbbe195018?auto=format&fit=crop&q=80&w=600",
+                    image: "https://sport.detik.com/sport-lain/d-6977978/biar-sat-set-3-teknik-ini-harus-dikuasai-saat-main-futsal",
                     desc: "Aktivitas rutin mingguan bersama teman untuk melatih stamina, strategi permainan cepat, dan kerja sama tim di lapangan.",
-                    link: "#"
+                    link: "https://sport.detik.com/sport-lain/d-6977978/biar-sat-set-3-teknik-ini-harus-dikuasai-saat-main-futsal"
                 },
                 {
                     id: "2",
@@ -641,6 +641,13 @@
                 const saved = localStorage.getItem('ry_portfolio_cms_data');
                 if (saved) {
                     appData = JSON.parse(saved);
+                    // Perbarui tautan futsal jika masih menggunakan tautan lama
+                    const futsalCard = appData.hobbies.find(h => h.id === "1");
+                    if (futsalCard) {
+                        futsalCard.image = "https://sport.detik.com/sport-lain/d-6977978/biar-sat-set-3-teknik-ini-harus-dikuasai-saat-main-futsal";
+                        futsalCard.link = "https://sport.detik.com/sport-lain/d-6977978/biar-sat-set-3-teknik-ini-harus-dikuasai-saat-main-futsal";
+                        persistBackendData();
+                    }
                 }
             } catch (e) {
                 console.error("Failed to parse local storage", e);
@@ -707,7 +714,7 @@
                 card.innerHTML = `
                     <div>
                         <div class="relative h-48 overflow-hidden bg-black">
-                            <img src="${item.image}" alt="${item.title}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 opacity-90 group-hover:opacity-100" onerror="this.src='https://placehold.co/600x400/141414/D4AF37?text=${encodeURIComponent(item.title)}'">
+                            <img src="${item.image}" alt="${item.title}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 opacity-90 group-hover:opacity-100" onerror="this.src='https://images.unsplash.com/photo-1574629810360-7efbbe195018?auto=format&fit=crop&q=80&w=600'">
                             <span class="absolute top-3 left-3 bg-black/80 backdrop-blur-md text-[#D4AF37] border border-[#D4AF37]/30 text-xs px-3 py-1 rounded-full font-medium">
                                 <i class="fa-solid ${item.icon || 'fa-star'} mr-1"></i> ${item.category}
                             </span>
