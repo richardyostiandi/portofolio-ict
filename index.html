@@ -1,1655 +1,1059 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="id" class="scroll-smooth">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Snake XP Survival - Game Ular Modern</title>
+    <title>Richard Yostiandi | Profil & Backend Admin</title>
+    
+    <!-- Google Font Montserrat -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
     <style>
-        :root {
-            --bg-color: #0b0f19;
-            --panel-bg: rgba(23, 32, 54, 0.75);
-            --panel-border: rgba(56, 189, 248, 0.25);
-            --primary-green: #34d399;
-            --primary-green-glow: rgba(52, 211, 153, 0.5);
-            --accent-cyan: #38bdf8;
-            --accent-cyan-glow: rgba(56, 189, 248, 0.5);
-            --accent-purple: #c084fc;
-            --accent-amber: #fbbf24;
-            --danger-red: #f87171;
-            --text-main: #f8fafc;
-            --text-muted: #cbd5e1;
-            --text-label: #7dd3fc;
-            --font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-        }
-
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            user-select: none;
-            -webkit-user-select: none;
-        }
-
         body {
-            background-color: var(--bg-color);
-            color: var(--text-main);
-            font-family: var(--font-family);
+            font-family: 'Montserrat', sans-serif;
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            color: #E5E7EB;
             min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            overflow: hidden;
-            padding: 12px;
         }
 
-        .game-container {
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0D0D0D;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #D4AF37;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #AA7C11;
+        }
+
+        /* Animated Glowing Light Beam around Badge */
+        @keyframes rotateLightBeam {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @keyframes pulseGlow {
+            0%, 100% {
+                filter: drop-shadow(0 0 8px rgba(212, 175, 55, 0.4));
+            }
+            50% {
+                filter: drop-shadow(0 0 20px rgba(255, 215, 0, 0.85));
+            }
+        }
+
+        .light-orbit-wrapper {
             position: relative;
-            width: 100%;
-            max-width: 900px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 12px;
-        }
-
-        /* Header & Dashboard Stats */
-        .header-panel {
-            width: 100%;
-            background: var(--panel-bg);
-            border: 1px solid var(--panel-border);
-            backdrop-filter: blur(12px);
-            border-radius: 16px;
-            padding: 12px 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
-        }
-
-        .brand-title {
-            font-size: 1.25rem;
-            font-weight: 800;
-            letter-spacing: 1.5px;
-            background: linear-gradient(135deg, #34d399 0%, #38bdf8 50%, #c084fc 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            filter: drop-shadow(0 0 10px rgba(56, 189, 248, 0.35));
-        }
-
-        .stats-group {
-            display: flex;
-            gap: 20px;
-            align-items: center;
-        }
-
-        .stat-box {
-            display: flex;
-            flex-direction: column;
-            align-items: flex-end;
-        }
-
-        .stat-label {
-            font-size: 0.72rem;
-            font-weight: 700;
-            text-transform: uppercase;
-            color: var(--text-label);
-            letter-spacing: 0.8px;
-            text-shadow: 0 0 6px rgba(125, 211, 252, 0.3);
-        }
-
-        .stat-value {
-            font-size: 1.25rem;
-            font-weight: 800;
-            color: var(--accent-cyan);
-            text-shadow: 0 0 10px var(--accent-cyan-glow);
-        }
-
-        .stat-value.highlight {
-            color: var(--primary-green);
-            text-shadow: 0 0 12px var(--primary-green-glow);
-        }
-
-        /* Utility Control Bar (Pause, Mute, Skin, Control Mode) */
-        .controls-bar {
-            width: 100%;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 10px;
-            flex-wrap: wrap;
-            background: rgba(15, 23, 42, 0.6);
-            border: 1px solid var(--panel-border);
-            border-radius: 12px;
-            padding: 8px 14px;
-        }
-
-        .control-group {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .icon-btn {
-            background: rgba(30, 41, 59, 0.7);
-            border: 1px solid rgba(56, 189, 248, 0.25);
-            color: #e2e8f0;
-            padding: 6px 12px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 0.82rem;
-            font-weight: 600;
             display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            transition: all 0.2s ease;
-        }
-
-        .icon-btn #controlModeText {
-            color: var(--accent-amber);
-            font-weight: 700;
-        }
-
-        .icon-btn:hover {
-            background: rgba(56, 189, 248, 0.2);
-            border-color: var(--accent-cyan);
-            color: #ffffff;
-            box-shadow: 0 0 10px rgba(56, 189, 248, 0.3);
-        }
-
-        .icon-btn.active {
-            background: rgba(16, 185, 129, 0.25);
-            border-color: var(--primary-green);
-            color: #34d399;
-            box-shadow: 0 0 10px var(--primary-green-glow);
-        }
-
-        .skin-select-label {
-            font-size: 0.78rem;
-            color: var(--text-label);
-            font-weight: 700;
-            letter-spacing: 0.5px;
-            text-shadow: 0 0 6px rgba(125, 211, 252, 0.25);
-        }
-
-        .skin-select {
-            background: rgba(15, 23, 42, 0.9);
-            color: var(--text-main);
-            border: 1px solid var(--panel-border);
-            padding: 6px 10px;
-            border-radius: 8px;
-            font-size: 0.8rem;
-            font-weight: 600;
-            cursor: pointer;
-            outline: none;
-            transition: border-color 0.2s ease;
-        }
-
-        .skin-select:hover {
-            border-color: var(--accent-cyan);
-        }
-
-        .stats-group {
-            display: flex;
-            gap: 16px;
-            align-items: center;
-        }
-
-        .stat-box {
-            display: flex;
-            flex-direction: column;
-            align-items: flex-end;
-        }
-
-        .stat-label {
-            font-size: 0.7rem;
-            text-transform: uppercase;
-            color: var(--text-muted);
-            letter-spacing: 0.5px;
-        }
-
-        .stat-value {
-            font-size: 1.2rem;
-            font-weight: 700;
-            color: var(--text-main);
-        }
-
-        .stat-value.highlight {
-            color: var(--primary-green);
-            text-shadow: 0 0 8px var(--primary-green-glow);
-        }
-
-        /* Utility Control Bar (Pause, Mute, Skin, Control Mode) */
-        .controls-bar {
-            width: 100%;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 10px;
-            flex-wrap: wrap;
-            background: rgba(15, 23, 42, 0.6);
-            border: 1px solid var(--panel-border);
-            border-radius: 12px;
-            padding: 8px 14px;
-        }
-
-        .control-group {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .icon-btn {
-            background: rgba(255, 255, 255, 0.08);
-            border: 1px solid rgba(255, 255, 255, 0.15);
-            color: var(--text-main);
-            padding: 6px 12px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 0.82rem;
-            font-weight: 600;
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            transition: all 0.2s ease;
-        }
-
-        .icon-btn:hover {
-            background: rgba(56, 189, 248, 0.2);
-            border-color: var(--accent-cyan);
-            color: var(--accent-cyan);
-        }
-
-        .icon-btn.active {
-            background: rgba(16, 185, 129, 0.25);
-            border-color: var(--primary-green);
-            color: #34d399;
-        }
-
-        .skin-select {
-            background: rgba(15, 23, 42, 0.9);
-            color: var(--text-main);
-            border: 1px solid var(--panel-border);
-            padding: 6px 10px;
-            border-radius: 8px;
-            font-size: 0.8rem;
-            font-weight: 600;
-            cursor: pointer;
-            outline: none;
-        }
-
-        /* Powerup Status Banner inside Canvas */
-        .powerup-hud {
-            position: absolute;
-            top: 12px;
-            left: 50%;
-            transform: translateX(-50%);
-            display: flex;
-            gap: 8px;
-            z-index: 5;
-            pointer-events: none;
-        }
-
-        .powerup-badge {
-            background: rgba(15, 23, 42, 0.85);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            backdrop-filter: blur(6px);
-            padding: 4px 10px;
-            border-radius: 20px;
-            font-size: 0.75rem;
-            font-weight: 700;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            color: #fff;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.4);
-            animation: pulseBadge 1s infinite alternate;
-        }
-
-        @keyframes pulseBadge {
-            from { transform: scale(1); }
-            to { transform: scale(1.05); }
-        }
-
-        .hunger-container {
-            width: 100%;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .hunger-label {
-            font-size: 0.75rem;
-            font-weight: 800;
-            color: var(--accent-amber);
-            letter-spacing: 1px;
-            white-space: nowrap;
-            text-shadow: 0 0 8px rgba(251, 191, 36, 0.4);
-        }
-
-        .hunger-bar-outer {
-            flex-grow: 1;
-            height: 10px;
-            background: rgba(255, 255, 255, 0.08);
-            border-radius: 20px;
+            border-radius: 9999px;
+            padding: 1.5px;
             overflow: hidden;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            position: relative;
+            box-shadow: 0 0 20px rgba(212, 175, 55, 0.35);
         }
 
-        .hunger-bar-inner {
-            height: 100%;
-            width: 100%;
-            background: linear-gradient(90deg, var(--danger-red) 0%, #f59e0b 30%, var(--primary-green) 100%);
-            border-radius: 20px;
-            transition: width 0.15s linear, background 0.3s ease;
-            box-shadow: 0 0 10px var(--primary-green-glow);
-        }
-
-        .canvas-wrapper {
-            position: relative;
-            width: 100%;
-            aspect-ratio: 16 / 9;
-            max-height: 70vh;
-            background: #060911;
-            border-radius: 18px;
-            border: 1px solid rgba(56, 189, 248, 0.35);
-            box-shadow: 0 0 30px rgba(16, 185, 129, 0.25), 0 0 60px rgba(56, 189, 248, 0.18), 0 16px 48px rgba(0, 0, 0, 0.85);
-            cursor: crosshair;
-        }
-
-        /* Animated Glowing Gradient Outer Frame */
-        .canvas-wrapper::before {
+        .light-orbit-wrapper::before {
             content: '';
             position: absolute;
-            inset: -3px;
-            border-radius: 21px;
-            background: linear-gradient(135deg, #10b981, #38bdf8, #8b5cf6, #10b981);
-            background-size: 300% 300%;
-            z-index: -1;
-            animation: frameBorderGradient 7s ease infinite;
-            opacity: 0.85;
-            filter: blur(5px);
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: conic-gradient(
+                transparent 0deg,
+                transparent 140deg,
+                rgba(212, 175, 55, 0.4) 180deg,
+                #FFD700 220deg,
+                #FFFFFF 240deg,
+                #FFD700 260deg,
+                transparent 300deg
+            );
+            animation: rotateLightBeam 2.8s linear infinite;
         }
 
-        @keyframes frameBorderGradient {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-        }
-
-        /* Modern Cyber Brackets on Frame Corners */
-        .frame-corner {
-            position: absolute;
-            width: 22px;
-            height: 22px;
-            border-color: #38bdf8;
-            border-style: solid;
-            pointer-events: none;
-            z-index: 6;
-            filter: drop-shadow(0 0 8px #38bdf8);
-            opacity: 0.9;
-        }
-
-        .frame-corner.top-left {
-            top: 10px;
-            left: 10px;
-            border-width: 3px 0 0 3px;
-            border-top-left-radius: 6px;
-        }
-
-        .frame-corner.top-right {
-            top: 10px;
-            right: 10px;
-            border-width: 3px 3px 0 0;
-            border-top-right-radius: 6px;
-        }
-
-        .frame-corner.bottom-left {
-            bottom: 10px;
-            left: 10px;
-            border-width: 0 0 3px 3px;
-            border-bottom-left-radius: 6px;
-        }
-
-        .frame-corner.bottom-right {
-            bottom: 10px;
-            right: 10px;
-            border-width: 0 3px 3px 0;
-            border-bottom-right-radius: 6px;
-        }
-
-        /* Futuristic Ambient Edge Lights on All Sides */
-        .edge-light {
-            position: absolute;
-            pointer-events: none;
-            z-index: 5;
-            opacity: 0.8;
-        }
-
-        .edge-light.top {
-            top: 0; left: 15%; right: 15%; height: 2px;
-            background: linear-gradient(90deg, transparent, #38bdf8, transparent);
-            box-shadow: 0 0 12px #38bdf8;
-        }
-
-        .edge-light.bottom {
-            bottom: 0; left: 15%; right: 15%; height: 2px;
-            background: linear-gradient(90deg, transparent, #10b981, transparent);
-            box-shadow: 0 0 12px #10b981;
-        }
-
-        .edge-light.left {
-            top: 15%; bottom: 15%; left: 0; width: 2px;
-            background: linear-gradient(180deg, transparent, #38bdf8, transparent);
-            box-shadow: 0 0 12px #38bdf8;
-        }
-
-        .edge-light.right {
-            top: 15%; bottom: 15%; right: 0; width: 2px;
-            background: linear-gradient(180deg, transparent, #10b981, transparent);
-            box-shadow: 0 0 12px #10b981;
-        }
-
-        canvas {
-            display: block;
-            width: 100%;
-            height: 100%;
-        }
-
-        /* Overlay Modals (Start, Game Over, Instructions) */
-        .overlay-screen {
-            position: absolute;
-            inset: 0;
-            background: rgba(11, 15, 25, 0.88);
-            backdrop-filter: blur(8px);
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            padding: 24px;
-            text-align: center;
-            z-index: 10;
-            transition: opacity 0.3s ease, visibility 0.3s ease;
-        }
-
-        .overlay-screen.hidden {
-            opacity: 0;
-            visibility: hidden;
-            pointer-events: none;
-        }
-
-        .overlay-title {
-            font-size: 2.2rem;
-            font-weight: 900;
-            margin-bottom: 8px;
-            background: linear-gradient(135deg, #ffffff 0%, #38bdf8 50%, #c084fc 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            filter: drop-shadow(0 0 16px rgba(56, 189, 248, 0.4));
-        }
-
-        .overlay-subtitle {
-            font-size: 0.95rem;
-            color: var(--text-muted);
-            margin-bottom: 20px;
-            max-width: 480px;
-            line-height: 1.6;
-        }
-
-        /* Instructions Card */
-        .instruction-card {
-            background: rgba(15, 23, 42, 0.65);
-            border: 1px solid rgba(56, 189, 248, 0.25);
-            border-radius: 14px;
-            padding: 18px;
-            margin-bottom: 24px;
-            text-align: left;
-            max-width: 460px;
-            width: 100%;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
-        }
-
-        .instruction-card h4 {
-            color: var(--accent-cyan);
-            font-size: 0.88rem;
-            font-weight: 800;
-            text-transform: uppercase;
-            letter-spacing: 1.2px;
-            margin-bottom: 12px;
-            text-shadow: 0 0 8px var(--accent-cyan-glow);
-        }
-
-        .instruction-card ul {
-            list-style: none;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            font-size: 0.88rem;
-            color: var(--text-main);
-        }
-
-        .instruction-card li {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            line-height: 1.4;
-        }
-
-        .instruction-card li span.badge {
-            padding: 3px 10px;
-            border-radius: 6px;
-            font-weight: 800;
-            font-size: 0.72rem;
-            letter-spacing: 0.5px;
-            white-space: nowrap;
-        }
-
-        .badge-cyan {
-            background: rgba(56, 189, 248, 0.2);
-            color: var(--accent-cyan);
-            border: 1px solid rgba(56, 189, 248, 0.4);
-            text-shadow: 0 0 6px var(--accent-cyan-glow);
-        }
-
-        .badge-purple {
-            background: rgba(192, 132, 252, 0.2);
-            color: var(--accent-purple);
-            border: 1px solid rgba(192, 132, 252, 0.4);
-            text-shadow: 0 0 6px rgba(192, 132, 252, 0.4);
-        }
-
-        .badge-amber {
-            background: rgba(251, 191, 36, 0.2);
-            color: var(--accent-amber);
-            border: 1px solid rgba(251, 191, 36, 0.4);
-            text-shadow: 0 0 6px rgba(251, 191, 36, 0.4);
-        }
-
-        .badge-green {
-            background: rgba(52, 211, 153, 0.2);
-            color: var(--primary-green);
-            border: 1px solid rgba(52, 211, 153, 0.4);
-            text-shadow: 0 0 6px var(--primary-green-glow);
-        }
-
-        /* Buttons */
-        .btn {
-            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-            color: #ffffff;
-            font-size: 1rem;
-            font-weight: 800;
-            letter-spacing: 0.5px;
-            padding: 14px 32px;
-            border: 1px solid rgba(52, 211, 153, 0.5);
-            border-radius: 12px;
-            cursor: pointer;
-            box-shadow: 0 4px 20px var(--primary-green-glow);
-            transition: all 0.2s ease;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            text-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
-        }
-
-        .overlay-subtitle {
-            font-size: 0.95rem;
-            color: var(--text-muted);
-            margin-bottom: 20px;
-            max-width: 480px;
-            line-height: 1.5;
-        }
-
-        /* Instructions Card */
-        .instruction-card {
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            border-radius: 12px;
-            padding: 16px;
-            margin-bottom: 24px;
-            text-align: left;
-            max-width: 440px;
-            width: 100%;
-        }
-
-        .instruction-card h4 {
-            color: var(--accent-cyan);
-            font-size: 0.85rem;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            margin-bottom: 10px;
-        }
-
-        .instruction-card ul {
-            list-style: none;
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-            font-size: 0.88rem;
-            color: var(--text-main);
-        }
-
-        .instruction-card li {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .instruction-card li span.badge {
-            background: rgba(56, 189, 248, 0.2);
-            color: var(--accent-cyan);
-            padding: 2px 8px;
-            border-radius: 6px;
-            font-weight: 700;
-            font-size: 0.75rem;
-            white-space: nowrap;
-        }
-
-        /* Buttons */
-        .btn {
-            background: linear-gradient(135deg, var(--primary-green), #059669);
-            color: #fff;
-            font-size: 1rem;
-            font-weight: 700;
-            padding: 14px 32px;
-            border: none;
-            border-radius: 12px;
-            cursor: pointer;
-            box-shadow: 0 4px 20px var(--primary-green-glow);
-            transition: all 0.2s ease;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 24px rgba(16, 185, 129, 0.7);
-            filter: brightness(1.1);
-        }
-
-        .btn:active {
-            transform: translateY(0);
-        }
-
-        /* Final Score Board on Game Over */
-        .score-board {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 12px;
-            width: 100%;
-            max-width: 320px;
-            margin-bottom: 24px;
-        }
-
-        .score-item {
-            background: rgba(15, 23, 42, 0.7);
-            padding: 12px;
-            border-radius: 10px;
-            border: 1px solid var(--panel-border);
-        }
-
-        .score-item .label {
-            font-size: 0.75rem;
-            font-weight: 700;
-            color: var(--text-label);
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            margin-bottom: 4px;
-        }
-
-        .score-item .val {
-            font-size: 1.5rem;
-            font-weight: 800;
-            color: var(--accent-amber);
-            text-shadow: 0 0 10px rgba(251, 191, 36, 0.4);
-        }
-
-        .score-item .val.high {
-            color: var(--primary-green);
-            text-shadow: 0 0 10px var(--primary-green-glow);
+        .text-glow-aura {
+            animation: pulseGlow 3s infinite ease-in-out;
         }
     </style>
 </head>
-<body>
+<body id="dynamic-body" class="text-gray-200 antialiased selection:bg-[#D4AF37] selection:text-black relative">
 
-    <div class="game-container">
-        <!-- Top Stats Header -->
-        <div class="header-panel">
-            <div class="brand-title">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M12 2a10 10 0 1 0 10 10H12V2z" />
-                    <path d="M12 12 2.1 12a10 10 0 0 0 17.8 5.9" />
-                </svg>
-                SNAKE XP
-            </div>
-            <div class="stats-group">
-                <div class="stat-box">
-                    <span class="stat-label">Skor Saya</span>
-                    <span id="currentScore" class="stat-value highlight">0</span>
-                </div>
-                <div class="stat-box">
-                    <span class="stat-label">Rekor Tertinggi</span>
-                    <span id="highScore" class="stat-value">0</span>
-                </div>
-            </div>
-        </div>
-
-        <!-- Hunger / Body Size Bar -->
-        <div class="hunger-container">
-            <span class="hunger-label">⚡ UKURAN TUBUH</span>
-            <div class="hunger-bar-outer">
-                <div id="hungerBar" class="hunger-bar-inner"></div>
-            </div>
-        </div>
-
-        <!-- Control Options & Utility Bar -->
-        <div class="controls-bar">
-            <div class="control-group">
-                <button id="toggleControlModeBtn" class="icon-btn" title="Ubah Cara Kemudi Ular">
-                    🖱️ Mode: <span id="controlModeText">Tahan Klik</span>
-                </button>
-                <button id="pauseBtn" class="icon-btn">
-                    ⏸️ Jeda (P)
-                </button>
-                <button id="muteBtn" class="icon-btn">
-                    🔊 Suara: AKTIF
-                </button>
-            </div>
-            <div class="control-group">
-                <label for="skinSelect" class="skin-select-label">Skin Ular:</label>
-                <select id="skinSelect" class="skin-select">
-                    <option value="neon">🟩 Cyber Neon</option>
-                    <option value="plasma">🟥 Plasma Fire</option>
-                    <option value="electric">🟦 Electric Cyan</option>
-                    <option value="gold">🟨 Golden Cobra</option>
-                </select>
-            </div>
-        </div>
-
-        <!-- Canvas Game Window & Overlays -->
-        <div class="canvas-wrapper">
-            <div class="frame-corner top-left"></div>
-            <div class="frame-corner top-right"></div>
-            <div class="frame-corner bottom-left"></div>
-            <div class="frame-corner bottom-right"></div>
-            <div class="edge-light top"></div>
-            <div class="edge-light bottom"></div>
-            <div class="edge-light left"></div>
-            <div class="edge-light right"></div>
-
-            <!-- Active Powerups Active Banner -->
-            <div id="powerupHud" class="powerup-hud"></div>
-
-            <canvas id="gameCanvas"></canvas>
-
-            <!-- Pause Screen Overlay -->
-            <div id="pauseScreen" class="overlay-screen hidden">
-                <h1 class="overlay-title">PERMAINAN DIJEDA</h1>
-                <p class="overlay-subtitle">Istirahat sejenak! Tekan tombol di bawah atau tombol [P] untuk melanjutkan.</p>
-                <button id="resumeBtn" class="btn">
-                    ▶️ Lanjutkan Permainan
-                </button>
-            </div>
-
-            <!-- Start Screen Overlay -->
-            <div id="startScreen" class="overlay-screen">
-                <h1 class="overlay-title">SNAKE XP SURVIVAL</h1>
-                <p class="overlay-subtitle">Kendalikan ular, buru energi XP hijau, nikmati Power-Up & Combo, dan bertahanlah!</p>
+    <!-- Sticky Navigation Bar -->
+    <nav class="sticky top-0 z-40 bg-black/85 backdrop-blur-md border-b border-[#D4AF37]/20 transition-all duration-300">
+        <div class="max-w-5xl mx-auto px-5 py-4 flex items-center justify-between">
+            <a href="#" class="text-lg sm:text-xl font-bold tracking-tight text-white flex items-center gap-2">
+                <span id="nav-initials" class="w-8 h-8 rounded-lg bg-gradient-to-br from-[#D4AF37] to-[#AA7C11] text-black flex items-center justify-center font-extrabold text-sm shadow-md shadow-[#D4AF37]/20">RY</span>
+                <span id="nav-name" class="text-[#D4AF37]">Richard Y.</span>
+            </a>
+            
+            <div class="flex items-center gap-3 sm:gap-6 text-xs sm:text-sm font-semibold text-gray-300">
+                <a href="#about" class="hover:text-[#D4AF37] transition-colors hidden sm:inline-block">Tentang</a>
+                <a href="#hobbies" class="hover:text-[#D4AF37] transition-colors hidden sm:inline-block">Hobi</a>
+                <a href="#contact" class="hover:text-[#D4AF37] transition-colors hidden sm:inline-block">Kontak</a>
                 
-                <div class="instruction-card">
-                    <h4>Fitur & Cara Bermain:</h4>
-                    <ul>
-                        <li>
-                            <span class="badge badge-cyan">KONTROL</span> 
-                            Klik/Sentuh layar untuk mengarahkan ular. Bisa diubah ke mode Ikuti Kursor!
-                        </li>
-                        <li>
-                            <span class="badge badge-purple">POWER-UP</span> 
-                            Ambil item spesial: 🧲 Magnet, 🛡️ Shield, ⚡ Turbo, & 💎 2X Points!
-                        </li>
-                        <li>
-                            <span class="badge badge-amber">COMBO</span> 
-                            Makan XP berturut-turut untuk melipatgandakan skor Combo!
-                        </li>
-                        <li>
-                            <span class="badge badge-green">JEDA</span> 
-                            Tekan [P] atau tombol Jeda kapan saja saat butuh istirahat.
-                        </li>
-                    </ul>
+                <!-- Admin Button -->
+                <button onclick="handleAdminButtonClick()" id="btn-admin-nav" class="px-3.5 py-1.5 rounded-lg bg-[#D4AF37]/10 border border-[#D4AF37]/40 text-[#D4AF37] font-bold hover:bg-[#D4AF37] hover:text-black transition-all flex items-center gap-1.5 shadow-md">
+                    <i class="fa-solid fa-user-shield text-xs"></i>
+                    <span id="admin-nav-text">Backend Admin</span>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero / About Section -->
+    <section id="about" class="py-12 sm:py-20 max-w-5xl mx-auto px-5">
+        <div class="flex flex-col md:flex-row items-center md:items-start justify-between gap-10">
+            <!-- Profile Photo Container -->
+            <div class="flex flex-col items-center shrink-0">
+                <div class="relative w-40 h-40 sm:w-52 sm:h-52">
+                    <div class="absolute inset-0 rounded-full bg-gradient-to-tr from-[#D4AF37] via-[#AA7C11] to-[#FFD700] rotate-6 scale-105 opacity-80 blur-xs"></div>
+                    <img id="profile-img" src="" 
+                         alt="Foto Profil" 
+                         class="relative w-full h-full object-cover rounded-full border-4 border-[#1A1A1A] shadow-2xl shadow-[#D4AF37]/20"
+                         onerror="this.src='https://placehold.co/400x400/1A1A1A/D4AF37?text=Profile'">
+                </div>
+            </div>
+
+            <!-- Profile Info -->
+            <div class="text-center md:text-left space-y-4 max-w-xl">
+                <!-- Glowing Orbiting Light Beam Badge -->
+                <div class="light-orbit-wrapper">
+                    <span id="profile-tagline" class="relative z-10 inline-block px-4 py-1.5 rounded-full text-xs font-semibold bg-black/90 text-[#D4AF37] tracking-wide border border-[#D4AF37]/40 backdrop-blur-md">
+                        Selamat Datang di Portofolio Saya
+                    </span>
                 </div>
 
-                <button id="startBtn" class="btn">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-                        <polygon points="5 3 19 12 5 21 5 3"></polygon>
-                    </svg>
-                    Mulai Permainan
+                <h1 id="profile-fullname" class="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight text-white text-glow-aura">
+                    Richard <span class="text-transparent bg-clip-text bg-gradient-to-r from-[#D4AF37] via-[#F3E5AB] to-[#AA7C11]">Yostiandi</span>
+                </h1>
+                <p id="profile-bio" class="text-sm sm:text-base text-gray-300 leading-relaxed">
+                    Deskripsi profil...
+                </p>
+                <div class="pt-2 flex flex-wrap gap-3 justify-center md:justify-start">
+                    <a href="#hobbies" class="px-5 py-2.5 rounded-xl bg-gradient-to-r from-[#D4AF37] to-[#B8860B] text-black font-bold text-xs sm:text-sm shadow-lg shadow-[#D4AF37]/20 hover:brightness-110 transition-all">
+                        Eksplorasi Hobi <i class="fa-solid fa-arrow-down ml-1"></i>
+                    </a>
+                    <a href="#contact" class="px-5 py-2.5 rounded-xl bg-black/70 backdrop-blur-sm text-gray-200 font-semibold text-xs sm:text-sm hover:bg-[#262626] hover:text-[#D4AF37] transition-all border border-[#D4AF37]/30">
+                        Hubungi Saya
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Visi & Misi Kewirausahaan (Sentral / Center Layout) -->
+        <div class="mt-10 bg-black/80 backdrop-blur-md p-6 sm:p-8 rounded-2xl border border-[#D4AF37]/30 shadow-2xl shadow-black text-center space-y-5 max-w-3xl mx-auto">
+            <div class="flex flex-col sm:flex-row items-center justify-between gap-3 border-b border-[#D4AF37]/20 pb-4">
+                <div class="flex items-center gap-2 text-[#D4AF37] text-sm sm:text-base font-bold uppercase tracking-wider mx-auto sm:mx-0">
+                    <i class="fa-solid fa-briefcase text-base"></i>
+                    <span id="visi-title">Visi & Misi Kewirausahaan</span>
+                </div>
+                <span id="visi-badge" class="text-[10px] sm:text-xs px-3 py-1 rounded-full bg-[#D4AF37]/10 text-[#D4AF37] border border-[#D4AF37]/30 font-medium mx-auto sm:mx-0">Entrepreneur Mindset</span>
+            </div>
+            
+            <p id="visi-summary" class="text-xs sm:text-sm text-gray-300 leading-relaxed max-w-2xl mx-auto text-center">
+                Membangun ekosistem bisnis...
+            </p>
+
+            <!-- Misi Bisnis & Pilar Strategis -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-1">
+                <div class="bg-black/60 p-4 rounded-xl border border-[#D4AF37]/20 text-center flex flex-col items-center">
+                    <div id="misi1-title" class="flex items-center justify-center gap-2 text-[#D4AF37] font-bold text-xs sm:text-sm mb-1.5">
+                        <i class="fa-solid fa-lightbulb"></i> Inovasi & Solusi
+                    </div>
+                    <p id="misi1-desc" class="text-[11px] sm:text-xs text-gray-300 leading-relaxed">
+                        Menciptakan ide usaha...
+                    </p>
+                </div>
+                <div class="bg-black/60 p-4 rounded-xl border border-[#D4AF37]/20 text-center flex flex-col items-center">
+                    <div id="misi2-title" class="flex items-center justify-center gap-2 text-[#D4AF37] font-bold text-xs sm:text-sm mb-1.5">
+                        <i class="fa-solid fa-users"></i> Kepemimpinan Tim
+                    </div>
+                    <p id="misi2-desc" class="text-[11px] sm:text-xs text-gray-300 leading-relaxed">
+                        Membina budaya kerja...
+                    </p>
+                </div>
+            </div>
+
+            <!-- Filosofi Bisnis -->
+            <div class="pt-2 border-t border-[#D4AF37]/10">
+                <p id="visi-quote" class="text-xs sm:text-sm text-gray-300 italic leading-relaxed text-center max-w-xl mx-auto">
+                    <i class="fa-solid fa-quote-left text-[#D4AF37]/40 mr-1"></i>
+                    "Keberhasilan sebuah usaha..."
+                </p>
+            </div>
+
+            <!-- Core Value Badges -->
+            <div id="visi-tags-container" class="pt-1 flex flex-wrap gap-2.5 justify-center">
+                <!-- Injected via JS -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Hobbies Section with Card Layout -->
+    <section id="hobbies" class="py-12 sm:py-20 max-w-5xl mx-auto px-5">
+        <div class="text-center max-w-2xl mx-auto mb-12">
+            <span class="text-xs font-semibold tracking-wider text-[#D4AF37] uppercase">Aktivitas & Olahraga</span>
+            <h2 class="text-2xl sm:text-3xl font-bold text-white mt-1 mb-3">Hobi & Kegemaran</h2>
+            <div class="w-12 h-1 bg-gradient-to-r from-[#D4AF37] to-[#AA7C11] mx-auto rounded-full mb-4"></div>
+            <p class="text-sm sm:text-base text-gray-300">
+                Di luar aktivitas harian, berikut adalah beberapa olahraga favorit yang menjaga fisik tetap bugar dan pikiran tetap fokus.
+            </p>
+        </div>
+
+        <!-- Dynamic Hobbies Grid Container -->
+        <div id="hobbies-grid" class="grid grid-cols-1 sm:grid-cols-2 gap-6 max-w-4xl mx-auto">
+            <!-- Cards Injected via JavaScript -->
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact" class="py-12 sm:py-20 max-w-5xl mx-auto px-5">
+        <div class="bg-black/85 backdrop-blur-md rounded-3xl p-8 sm:p-12 border border-[#D4AF37]/30 text-center max-w-3xl mx-auto shadow-2xl shadow-black">
+            <h2 class="text-2xl sm:text-3xl font-bold text-white mb-3">Mari Terhubung!</h2>
+            <p class="text-xs sm:text-sm text-gray-300 max-w-md mx-auto mb-8">
+                Tertarik untuk berdiskusi, berkolaborasi, atau sekadar main futsal dan badminton bersama? Jangan ragu untuk menyapa.
+            </p>
+            
+            <div class="flex flex-wrap justify-center gap-4 text-xs sm:text-sm">
+                <a id="contact-email-btn" href="mailto:richard@example.com" class="px-5 py-3 rounded-xl bg-gradient-to-r from-[#D4AF37] to-[#B8860B] text-black font-bold hover:brightness-110 transition-all flex items-center gap-2 shadow-lg shadow-[#D4AF37]/20">
+                    <i class="fa-solid fa-envelope"></i> Kirim Email
+                </a>
+                <a id="contact-wa-btn" href="https://wa.me/" target="_blank" rel="noopener noreferrer" class="px-5 py-3 rounded-xl bg-black/60 text-gray-200 font-semibold border border-[#D4AF37]/30 hover:bg-[#262626] hover:text-[#D4AF37] transition-all flex items-center gap-2">
+                    <i class="fa-brands fa-whatsapp text-emerald-400"></i> WhatsApp
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer Section -->
+    <footer class="border-t border-[#D4AF37]/20 bg-black/90 backdrop-blur-md py-8">
+        <div class="max-w-5xl mx-auto px-5 flex flex-col sm:flex-row items-center justify-between gap-4 text-center sm:text-left">
+            <div>
+                <p class="text-xs text-gray-400 font-medium">
+                    &copy; 2026 <span id="footer-copyright-name" class="font-bold text-[#D4AF37]">Richard Yostiandi</span>. All rights reserved.
+                </p>
+            </div>
+
+            <!-- Social Media Links -->
+            <div class="flex items-center space-x-4">
+                <a id="social-linkedin" href="#" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn" class="w-9 h-9 rounded-full bg-black/60 text-gray-300 border border-[#D4AF37]/30 flex items-center justify-center hover:bg-[#D4AF37] hover:text-black hover:border-[#D4AF37] transition-all shadow-md">
+                    <i class="fa-brands fa-linkedin-in text-sm"></i>
+                </a>
+                <a id="social-instagram" href="#" target="_blank" rel="noopener noreferrer" aria-label="Instagram" class="w-9 h-9 rounded-full bg-black/60 text-gray-300 border border-[#D4AF37]/30 flex items-center justify-center hover:bg-[#D4AF37] hover:text-black hover:border-[#D4AF37] transition-all shadow-md">
+                    <i class="fa-brands fa-instagram text-sm"></i>
+                </a>
+                <a id="social-github" href="#" target="_blank" rel="noopener noreferrer" aria-label="GitHub" class="w-9 h-9 rounded-full bg-black/60 text-gray-300 border border-[#D4AF37]/30 flex items-center justify-center hover:bg-[#D4AF37] hover:text-black hover:border-[#D4AF37] transition-all shadow-md">
+                    <i class="fa-brands fa-github text-sm"></i>
+                </a>
+                <a id="social-twitter" href="#" target="_blank" rel="noopener noreferrer" aria-label="Twitter/X" class="w-9 h-9 rounded-full bg-black/60 text-gray-300 border border-[#D4AF37]/30 flex items-center justify-center hover:bg-[#D4AF37] hover:text-black hover:border-[#D4AF37] transition-all shadow-md">
+                    <i class="fa-brands fa-x-twitter text-sm"></i>
+                </a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Modal Login Admin -->
+    <div id="login-modal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-md hidden flex items-center justify-center p-4">
+        <div class="bg-[#141414] border border-[#D4AF37]/40 rounded-2xl p-6 sm:p-8 max-w-md w-full shadow-2xl relative text-left">
+            <button onclick="closeModal('login-modal')" class="absolute top-4 right-4 text-gray-400 hover:text-[#D4AF37] transition-colors">
+                <i class="fa-solid fa-xmark text-lg"></i>
+            </button>
+            <div class="text-center mb-6">
+                <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-[#D4AF37] to-[#AA7C11] text-black flex items-center justify-center mx-auto mb-3 shadow-lg shadow-[#D4AF37]/20">
+                    <i class="fa-solid fa-lock text-xl"></i>
+                </div>
+                <h3 class="text-xl font-bold text-white">Login Admin CMS</h3>
+                <p class="text-xs text-gray-400 mt-1">Masuk untuk mengelola konten dan link kartu</p>
+            </div>
+
+            <form onsubmit="handleLoginSubmit(event)" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-semibold text-gray-300 mb-1">Username</label>
+                    <input type="text" id="login-username" required placeholder="Default: admin" 
+                           class="w-full bg-black/70 border border-[#D4AF37]/30 rounded-lg px-3.5 py-2.5 text-xs text-white placeholder-gray-500 focus:outline-none focus:border-[#D4AF37]">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-gray-300 mb-1">Password</label>
+                    <input type="password" id="login-password" required placeholder="Default: admin1234" 
+                           class="w-full bg-black/70 border border-[#D4AF37]/30 rounded-lg px-3.5 py-2.5 text-xs text-white placeholder-gray-500 focus:outline-none focus:border-[#D4AF37]">
+                </div>
+                <div class="p-2.5 rounded-lg bg-[#D4AF37]/10 border border-[#D4AF37]/20 text-[11px] text-[#D4AF37] flex items-center gap-2">
+                    <i class="fa-solid fa-circle-info shrink-0"></i>
+                    <span>Default Credential: <b>admin</b> | <b>admin1234</b></span>
+                </div>
+                <button type="submit" class="w-full py-3 rounded-xl bg-gradient-to-r from-[#D4AF37] to-[#B8860B] text-black font-bold text-xs hover:brightness-110 transition-all shadow-lg shadow-[#D4AF37]/20">
+                    Masuk ke Dashboard
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal Dashboard Admin CMS -->
+    <div id="admin-dashboard-modal" class="fixed inset-0 z-50 bg-black/85 backdrop-blur-md hidden flex items-center justify-center p-3 sm:p-5">
+        <div class="bg-[#121212] border border-[#D4AF37]/40 rounded-2xl max-w-4xl w-full h-[90vh] flex flex-col shadow-2xl overflow-hidden relative">
+            
+            <!-- Dashboard Header -->
+            <div class="bg-black/90 px-5 py-4 border-b border-[#D4AF37]/20 flex items-center justify-between shrink-0">
+                <div class="flex items-center gap-3">
+                    <span class="w-8 h-8 rounded-lg bg-gradient-to-br from-[#D4AF37] to-[#AA7C11] text-black flex items-center justify-center font-bold text-sm">
+                        <i class="fa-solid fa-sliders"></i>
+                    </span>
+                    <div>
+                        <h3 class="text-sm sm:text-base font-bold text-white">Backend CMS Management</h3>
+                        <p class="text-[10px] sm:text-xs text-[#D4AF37]">Panel Pengelolaan Konten & Tautan Landing Page</p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-2">
+                    <button onclick="handleLogout()" class="px-3 py-1.5 rounded-lg bg-red-950/60 border border-red-500/30 text-red-400 text-xs font-semibold hover:bg-red-900/50 transition-all">
+                        <i class="fa-solid fa-right-from-bracket mr-1"></i> Logout
+                    </button>
+                    <button onclick="closeModal('admin-dashboard-modal')" class="text-gray-400 hover:text-[#D4AF37] p-2 transition-colors">
+                        <i class="fa-solid fa-xmark text-lg"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Tab Navigation Buttons -->
+            <div class="bg-black/60 border-b border-[#D4AF37]/20 px-5 flex gap-2 overflow-x-auto text-xs shrink-0 py-2">
+                <button onclick="switchTab('tab-profile')" id="btn-tab-profile" class="tab-btn px-4 py-2 rounded-lg font-semibold bg-[#D4AF37] text-black transition-all shrink-0">
+                    <i class="fa-solid fa-user mr-1.5"></i> Profil & Bg
+                </button>
+                <button onclick="switchTab('tab-visi')" id="btn-tab-visi" class="tab-btn px-4 py-2 rounded-lg font-semibold bg-black/60 text-gray-300 border border-[#D4AF37]/20 hover:text-[#D4AF37] transition-all shrink-0">
+                    <i class="fa-solid fa-briefcase mr-1.5"></i> Visi & Misi
+                </button>
+                <button onclick="switchTab('tab-hobbies')" id="btn-tab-hobbies" class="tab-btn px-4 py-2 rounded-lg font-semibold bg-black/60 text-gray-300 border border-[#D4AF37]/20 hover:text-[#D4AF37] transition-all shrink-0">
+                    <i class="fa-solid fa-layer-group mr-1.5"></i> Kartu Hobi & Link
+                </button>
+                <button onclick="switchTab('tab-contact')" id="btn-tab-contact" class="tab-btn px-4 py-2 rounded-lg font-semibold bg-black/60 text-gray-300 border border-[#D4AF37]/20 hover:text-[#D4AF37] transition-all shrink-0">
+                    <i class="fa-solid fa-share-nodes mr-1.5"></i> Kontak & Sosmed
                 </button>
             </div>
 
-            <!-- Game Over Screen Overlay -->
-            <div id="gameOverScreen" class="overlay-screen hidden">
-                <h1 class="overlay-title" style="background: linear-gradient(135deg, #f87171, #fbbf24); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
-                    PERMAINAN SELESAI
-                </h1>
-                <p id="gameOverReason" class="overlay-subtitle">Tubuh ular habis menyusut!</p>
-
-                <div class="score-board">
-                    <div class="score-item">
-                        <div class="label">Skor Akhir</div>
-                        <div id="finalScore" class="val">0</div>
-                    </div>
-                    <div class="score-item">
-                        <div class="label">Rekor Tertinggi</div>
-                        <div id="finalHighScore" class="val high">0</div>
+            <!-- Dashboard Content Scrollable Body -->
+            <div class="p-5 sm:p-6 overflow-y-auto flex-grow space-y-6 text-xs text-left">
+                
+                <!-- Tab 1: Profil & Background -->
+                <div id="tab-profile" class="tab-content space-y-4">
+                    <h4 class="text-sm font-bold text-[#D4AF37] border-b border-[#D4AF37]/20 pb-2">Pengaturan Informasi Utama & Foto</h4>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block font-semibold mb-1 text-gray-300">Nama Lengkap</label>
+                            <input type="text" id="edit-fullname" class="w-full bg-black/70 border border-[#D4AF37]/30 rounded-lg p-2.5 text-white focus:border-[#D4AF37]">
+                        </div>
+                        <div>
+                            <label class="block font-semibold mb-1 text-gray-300">Inisial Logo (1-2 Karakter)</label>
+                            <input type="text" id="edit-initials" maxlength="3" class="w-full bg-black/70 border border-[#D4AF37]/30 rounded-lg p-2.5 text-white focus:border-[#D4AF37]">
+                        </div>
+                        <div class="sm:col-span-2">
+                            <label class="block font-semibold mb-1 text-gray-300">Tagline Sambutan</label>
+                            <input type="text" id="edit-tagline" class="w-full bg-black/70 border border-[#D4AF37]/30 rounded-lg p-2.5 text-white focus:border-[#D4AF37]">
+                        </div>
+                        <div class="sm:col-span-2">
+                            <label class="block font-semibold mb-1 text-gray-300">Deskripsi Singkat Profil (Bio)</label>
+                            <textarea id="edit-bio" rows="3" class="w-full bg-black/70 border border-[#D4AF37]/30 rounded-lg p-2.5 text-white focus:border-[#D4AF37]"></textarea>
+                        </div>
+                        <div>
+                            <label class="block font-semibold mb-1 text-gray-300">URL Foto Profil</label>
+                            <input type="text" id="edit-photourl" class="w-full bg-black/70 border border-[#D4AF37]/30 rounded-lg p-2.5 text-white focus:border-[#D4AF37]">
+                        </div>
+                        <div>
+                            <label class="block font-semibold mb-1 text-gray-300">URL Background Image Utama</label>
+                            <input type="text" id="edit-bgurl" class="w-full bg-black/70 border border-[#D4AF37]/30 rounded-lg p-2.5 text-white focus:border-[#D4AF37]">
+                        </div>
                     </div>
                 </div>
 
-                <button id="restartBtn" class="btn">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/>
-                    </svg>
-                    Mulai Ulang (Restart)
+                <!-- Tab 2: Visi & Misi -->
+                <div id="tab-visi" class="tab-content space-y-4 hidden">
+                    <h4 class="text-sm font-bold text-[#D4AF37] border-b border-[#D4AF37]/20 pb-2">Pengaturan Visi & Misi Kewirausahaan</h4>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block font-semibold mb-1 text-gray-300">Judul Seksi</label>
+                            <input type="text" id="edit-visi-title" class="w-full bg-black/70 border border-[#D4AF37]/30 rounded-lg p-2.5 text-white focus:border-[#D4AF37]">
+                        </div>
+                        <div>
+                            <label class="block font-semibold mb-1 text-gray-300">Badge Mindset</label>
+                            <input type="text" id="edit-visi-badge" class="w-full bg-black/70 border border-[#D4AF37]/30 rounded-lg p-2.5 text-white focus:border-[#D4AF37]">
+                        </div>
+                        <div class="sm:col-span-2">
+                            <label class="block font-semibold mb-1 text-gray-300">Ringkasan Visi</label>
+                            <textarea id="edit-visi-summary" rows="2" class="w-full bg-black/70 border border-[#D4AF37]/30 rounded-lg p-2.5 text-white focus:border-[#D4AF37]"></textarea>
+                        </div>
+                        <div>
+                            <label class="block font-semibold mb-1 text-gray-300">Misi 1: Judul & Deskripsi</label>
+                            <input type="text" id="edit-misi1-title" class="w-full bg-black/70 border border-[#D4AF37]/30 rounded-lg p-2.5 text-white mb-2 focus:border-[#D4AF37]" placeholder="Judul Misi 1">
+                            <textarea id="edit-misi1-desc" rows="2" class="w-full bg-black/70 border border-[#D4AF37]/30 rounded-lg p-2.5 text-white focus:border-[#D4AF37]" placeholder="Deskripsi Misi 1"></textarea>
+                        </div>
+                        <div>
+                            <label class="block font-semibold mb-1 text-gray-300">Misi 2: Judul & Deskripsi</label>
+                            <input type="text" id="edit-misi2-title" class="w-full bg-black/70 border border-[#D4AF37]/30 rounded-lg p-2.5 text-white mb-2 focus:border-[#D4AF37]" placeholder="Judul Misi 2">
+                            <textarea id="edit-misi2-desc" rows="2" class="w-full bg-black/70 border border-[#D4AF37]/30 rounded-lg p-2.5 text-white focus:border-[#D4AF37]" placeholder="Deskripsi Misi 2"></textarea>
+                        </div>
+                        <div class="sm:col-span-2">
+                            <label class="block font-semibold mb-1 text-gray-300">Kutipan Filosofi Bisnis</label>
+                            <textarea id="edit-visi-quote" rows="2" class="w-full bg-black/70 border border-[#D4AF37]/30 rounded-lg p-2.5 text-white focus:border-[#D4AF37]"></textarea>
+                        </div>
+                        <div class="sm:col-span-2">
+                            <label class="block font-semibold mb-1 text-gray-300">Core Value Badges (Pisahkan dengan Koma)</label>
+                            <input type="text" id="edit-visi-tags" class="w-full bg-black/70 border border-[#D4AF37]/30 rounded-lg p-2.5 text-white focus:border-[#D4AF37]" placeholder="Pertumbuhan, Integritas, Kualitas">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tab 3: Kartu Hobi & Link (CRUD) -->
+                <div id="tab-hobbies" class="tab-content space-y-4 hidden">
+                    <div class="flex items-center justify-between border-b border-[#D4AF37]/20 pb-2">
+                        <h4 class="text-sm font-bold text-[#D4AF37]">Daftar Kartu Hobi & Tautan (Links)</h4>
+                        <button onclick="openHobbyModal()" class="px-3 py-1.5 rounded-lg bg-gradient-to-r from-[#D4AF37] to-[#B8860B] text-black font-bold text-xs hover:brightness-110 transition-all flex items-center gap-1">
+                            <i class="fa-solid fa-plus"></i> Tambah Kartu Baru
+                        </button>
+                    </div>
+
+                    <div id="admin-hobbies-list" class="space-y-3">
+                        <!-- Hobby List Items Injected via JS -->
+                    </div>
+                </div>
+
+                <!-- Tab 4: Kontak & Social Media Links -->
+                <div id="tab-contact" class="tab-content space-y-4 hidden">
+                    <h4 class="text-sm font-bold text-[#D4AF37] border-b border-[#D4AF37]/20 pb-2">Pengaturan Tautan Kontak & Sosial Media</h4>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block font-semibold mb-1 text-gray-300">Alamat Email</label>
+                            <input type="email" id="edit-contact-email" class="w-full bg-black/70 border border-[#D4AF37]/30 rounded-lg p-2.5 text-white focus:border-[#D4AF37]">
+                        </div>
+                        <div>
+                            <label class="block font-semibold mb-1 text-gray-300">URL / Link WhatsApp</label>
+                            <input type="text" id="edit-contact-wa" class="w-full bg-black/70 border border-[#D4AF37]/30 rounded-lg p-2.5 text-white focus:border-[#D4AF37]">
+                        </div>
+                        <div>
+                            <label class="block font-semibold mb-1 text-gray-300">Link LinkedIn</label>
+                            <input type="text" id="edit-social-linkedin" class="w-full bg-black/70 border border-[#D4AF37]/30 rounded-lg p-2.5 text-white focus:border-[#D4AF37]">
+                        </div>
+                        <div>
+                            <label class="block font-semibold mb-1 text-gray-300">Link Instagram</label>
+                            <input type="text" id="edit-social-instagram" class="w-full bg-black/70 border border-[#D4AF37]/30 rounded-lg p-2.5 text-white focus:border-[#D4AF37]">
+                        </div>
+                        <div>
+                            <label class="block font-semibold mb-1 text-gray-300">Link GitHub</label>
+                            <input type="text" id="edit-social-github" class="w-full bg-black/70 border border-[#D4AF37]/30 rounded-lg p-2.5 text-white focus:border-[#D4AF37]">
+                        </div>
+                        <div>
+                            <label class="block font-semibold mb-1 text-gray-300">Link Twitter / X</label>
+                            <input type="text" id="edit-social-twitter" class="w-full bg-black/70 border border-[#D4AF37]/30 rounded-lg p-2.5 text-white focus:border-[#D4AF37]">
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Dashboard Footer Action Bar -->
+            <div class="bg-black/90 px-5 py-3 border-t border-[#D4AF37]/20 flex items-center justify-between shrink-0">
+                <button onclick="confirmResetData()" class="px-3.5 py-2 rounded-xl bg-gray-800 text-gray-300 font-semibold text-xs hover:bg-gray-700 hover:text-white transition-all">
+                    <i class="fa-solid fa-rotate-left mr-1"></i> Reset Data Awal
+                </button>
+                <button onclick="saveAllBackendData()" class="px-5 py-2 rounded-xl bg-gradient-to-r from-[#D4AF37] to-[#B8860B] text-black font-bold text-xs hover:brightness-110 transition-all shadow-lg shadow-[#D4AF37]/20">
+                    <i class="fa-solid fa-floppy-disk mr-1"></i> Simpan Perubahan
+                </button>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Modal Add/Edit Hobby Card -->
+    <div id="hobby-card-modal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-md hidden flex items-center justify-center p-4">
+        <div class="bg-[#141414] border border-[#D4AF37]/40 rounded-2xl p-6 max-w-lg w-full shadow-2xl relative text-left">
+            <button onclick="closeModal('hobby-card-modal')" class="absolute top-4 right-4 text-gray-400 hover:text-[#D4AF37] transition-colors">
+                <i class="fa-solid fa-xmark text-lg"></i>
+            </button>
+            
+            <h3 id="hobby-modal-title" class="text-base font-bold text-[#D4AF37] mb-4">Tambah Kartu Hobi Baru</h3>
+
+            <form onsubmit="handleSaveHobbyCard(event)" class="space-y-3 text-xs">
+                <input type="hidden" id="hobby-id">
+                
+                <div>
+                    <label class="block font-semibold mb-1 text-gray-300">Judul Hobi</label>
+                    <input type="text" id="hobby-input-title" required placeholder="Contoh: Bermain Futsal" class="w-full bg-black/70 border border-[#D4AF37]/30 rounded-lg p-2.5 text-white focus:border-[#D4AF37]">
+                </div>
+
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block font-semibold mb-1 text-gray-300">Kategori</label>
+                        <input type="text" id="hobby-input-category" required placeholder="Contoh: Olahraga Tim" class="w-full bg-black/70 border border-[#D4AF37]/30 rounded-lg p-2.5 text-white focus:border-[#D4AF37]">
+                    </div>
+                    <div>
+                        <label class="block font-semibold mb-1 text-gray-300">Icon FontAwesome Class</label>
+                        <input type="text" id="hobby-input-icon" required placeholder="fa-futbol" class="w-full bg-black/70 border border-[#D4AF37]/30 rounded-lg p-2.5 text-white focus:border-[#D4AF37]">
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block font-semibold mb-1 text-gray-300">Teks Badge / Jadwal</label>
+                        <input type="text" id="hobby-input-badge" required placeholder="Contoh: 2x Seminggu" class="w-full bg-black/70 border border-[#D4AF37]/30 rounded-lg p-2.5 text-white focus:border-[#D4AF37]">
+                    </div>
+                    <div>
+                        <label class="block font-semibold mb-1 text-gray-300">Tautan Detail / Link URL</label>
+                        <input type="text" id="hobby-input-link" placeholder="Contoh: https://... atau #" class="w-full bg-black/70 border border-[#D4AF37]/30 rounded-lg p-2.5 text-white focus:border-[#D4AF37]">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block font-semibold mb-1 text-gray-300">URL Gambar Kartu</label>
+                    <input type="text" id="hobby-input-image" required placeholder="https://..." class="w-full bg-black/70 border border-[#D4AF37]/30 rounded-lg p-2.5 text-white focus:border-[#D4AF37]">
+                </div>
+
+                <div>
+                    <label class="block font-semibold mb-1 text-gray-300">Deskripsi Hobi</label>
+                    <textarea id="hobby-input-desc" rows="3" required placeholder="Tuliskan deskripsi ringkas..." class="w-full bg-black/70 border border-[#D4AF37]/30 rounded-lg p-2.5 text-white focus:border-[#D4AF37]"></textarea>
+                </div>
+
+                <div class="pt-2 flex justify-end gap-2">
+                    <button type="button" onclick="closeModal('hobby-card-modal')" class="px-4 py-2 rounded-lg bg-gray-800 text-gray-300 font-semibold hover:bg-gray-700 transition-all">
+                        Batal
+                    </button>
+                    <button type="submit" class="px-5 py-2 rounded-lg bg-gradient-to-r from-[#D4AF37] to-[#B8860B] text-black font-bold hover:brightness-110 transition-all shadow-md">
+                        Simpan Kartu
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Custom Confirmation Modal (No alert/confirm) -->
+    <div id="confirm-modal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-md hidden flex items-center justify-center p-4">
+        <div class="bg-[#141414] border border-[#D4AF37]/40 rounded-2xl p-6 max-w-sm w-full shadow-2xl text-center">
+            <div class="w-10 h-10 rounded-full bg-yellow-500/10 border border-yellow-500/30 text-yellow-500 flex items-center justify-center mx-auto mb-3">
+                <i class="fa-solid fa-triangle-exclamation text-lg"></i>
+            </div>
+            <h4 id="confirm-title" class="text-sm font-bold text-white mb-1">Konfirmasi Akses</h4>
+            <p id="confirm-msg" class="text-xs text-gray-300 mb-5">Apakah Anda yakin ingin melanjutkan tindakan ini?</p>
+            <div class="flex justify-center gap-2">
+                <button id="btn-confirm-cancel" class="px-4 py-2 rounded-lg bg-gray-800 text-xs text-gray-300 font-semibold hover:bg-gray-700 transition-all">
+                    Batal
+                </button>
+                <button id="btn-confirm-yes" class="px-4 py-2 rounded-lg bg-red-600 text-xs text-white font-bold hover:bg-red-500 transition-all shadow-md">
+                    Ya, Lanjutkan
                 </button>
             </div>
         </div>
     </div>
 
+    <!-- Toast Notification Engine Container -->
+    <div id="toast-container" class="fixed bottom-5 right-5 z-50 flex flex-col gap-2 pointer-events-none"></div>
+
     <script>
-        // --- Web Audio API Synthesizer for sound effects ---
-        class SoundFX {
-            constructor() {
-                this.ctx = null;
-                this.isMuted = false;
-            }
-
-            init() {
-                if (!this.ctx) {
-                    this.ctx = new (window.AudioContext || window.webkitAudioContext)();
+        /* Default Data Schema */
+        const DEFAULT_DATA = {
+            profile: {
+                fullname: "Richard Yostiandi",
+                initials: "RY",
+                tagline: "Selamat Datang di Portofolio Saya",
+                bio: "Seseorang yang berfokus pada pengembangan diri, menyukai aktivitas luar ruangan, serta memiliki dedikasi tinggi dalam menjaga pola hidup sehat dan produktif.",
+                photoUrl: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSwWOEk1_v3GsQZioiBzAR14jNfXJFwGzCLI5AyBebXoiZpNVAb3toUNa4&s=10",
+                bgUrl: "https://www.pajak.go.id/sites/default/files/styles/max_650x650/public/2025-02/RichPeople_1402.JPG?itok=7XUuCsYg"
+            },
+            visiMisi: {
+                title: "Visi & Misi Kewirausahaan",
+                badge: "Entrepreneur Mindset",
+                summary: "Membangun ekosistem bisnis yang inovatif, berkelanjutan, serta berdampak positif dengan mengoptimalkan sumber daya secara efisien dan berstandar profesional.",
+                misi1Title: "Inovasi & Solusi",
+                misi1Desc: "Menciptakan ide usaha yang adaptif terhadap perkembangan teknologi dan kebutuhan pasar modern.",
+                misi2Title: "Kepemimpinan Tim",
+                misi2Desc: "Membina budaya kerja yang kolaboratif, solutif, serta berdedikasi tinggi mencapai target bersama.",
+                quote: "Keberhasilan sebuah usaha bukan hanya diukur dari angka, melainkan dari seberapa besar dampak positif dan manfaat yang mampu dihadirkan bagi sesama.",
+                tags: ["Pertumbuhan", "Integritas", "Kualitas"]
+            },
+            hobbies: [
+                {
+                    id: "1",
+                    title: "Bermain Futsal",
+                    category: "Olahraga Tim",
+                    icon: "fa-futbol",
+                    badge: "2x Seminggu",
+                    image: "https://sport.detik.com/sport-lain/d-6977978/biar-sat-set-3-teknik-ini-harus-dikuasai-saat-main-futsal",
+                    desc: "Aktivitas rutin mingguan bersama teman untuk melatih stamina, strategi permainan cepat, dan kerja sama tim di lapangan.",
+                    link: "https://sport.detik.com/sport-lain/d-6977978/biar-sat-set-3-teknik-ini-harus-dikuasai-saat-main-futsal"
+                },
+                {
+                    id: "2",
+                    title: "Basket",
+                    category: "Keterampilan & Kelincahan",
+                    icon: "fa-basketball",
+                    badge: "Match & Practice",
+                    image: "https://images.unsplash.com/photo-1546519638-68e109498ffc?auto=format&fit=crop&q=80&w=600",
+                    desc: "Mengasah ketepatan menembak (shooting), koordinasi tangan dan mata, serta latihan fisik yang intens dan menyenangkan.",
+                    link: "#"
+                },
+                {
+                    id: "3",
+                    title: "GYM",
+                    category: "Kebugaran & Kekuatan",
+                    icon: "fa-dumbbell",
+                    badge: "Fitness Routine",
+                    image: "https://images.unsplash.com/photo-1534438327276-14e5300c3a48?auto=format&fit=crop&q=80&w=600",
+                    desc: "Latihan beban dan kardio untuk membentuk postur tubuh yang ideal, meningkatkan metabolisme, serta membangun disiplin diri.",
+                    link: "#"
+                },
+                {
+                    id: "4",
+                    title: "Badminton",
+                    category: "Refleks & Kelincahan",
+                    icon: "fa-feather-pointed",
+                    badge: "Weekend Match",
+                    image: "https://images.unsplash.com/photo-1626224583764-f87db24ac4ea?auto=format&fit=crop&q=80&w=600",
+                    desc: "Bermain bulutangkis santai namun kompetitif untuk melatih refleks kilat, kelincahan gerak kaki, dan daya tahan tubuh.",
+                    link: "#"
                 }
+            ],
+            contact: {
+                email: "richard@example.com",
+                whatsapp: "https://wa.me/628123456789",
+                linkedin: "https://linkedin.com",
+                instagram: "https://instagram.com",
+                github: "https://github.com",
+                twitter: "https://twitter.com"
             }
+        };
 
-            playEatSound(pitchMultiplier = 1) {
-                if (!this.ctx || this.isMuted) return;
-                const osc = this.ctx.createOscillator();
-                const gain = this.ctx.createGain();
-                
-                osc.type = 'sine';
-                osc.frequency.setValueAtTime(520 * pitchMultiplier, this.ctx.currentTime);
-                osc.frequency.exponentialRampToValueAtTime(880 * pitchMultiplier, this.ctx.currentTime + 0.1);
-                
-                gain.gain.setValueAtTime(0.18, this.ctx.currentTime);
-                gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 0.1);
-                
-                osc.connect(gain);
-                gain.connect(this.ctx.destination);
-                
-                osc.start();
-                osc.stop(this.ctx.currentTime + 0.1);
+        /* Application Global State */
+        let appData = JSON.parse(JSON.stringify(DEFAULT_DATA));
+        let isAdminLoggedIn = false;
+
+        // Load data from LocalStorage
+        function loadBackendData() {
+            try {
+                const saved = localStorage.getItem('ry_portfolio_cms_data');
+                if (saved) {
+                    appData = JSON.parse(saved);
+                    // Perbarui tautan futsal jika masih menggunakan tautan lama
+                    const futsalCard = appData.hobbies.find(h => h.id === "1");
+                    if (futsalCard) {
+                        futsalCard.image = "https://sport.detik.com/sport-lain/d-6977978/biar-sat-set-3-teknik-ini-harus-dikuasai-saat-main-futsal";
+                        futsalCard.link = "https://sport.detik.com/sport-lain/d-6977978/biar-sat-set-3-teknik-ini-harus-dikuasai-saat-main-futsal";
+                        persistBackendData();
+                    }
+                }
+            } catch (e) {
+                console.error("Failed to parse local storage", e);
             }
+            renderFrontend();
+        }
 
-            playPowerupSound() {
-                if (!this.ctx || this.isMuted) return;
-                const osc = this.ctx.createOscillator();
-                const gain = this.ctx.createGain();
-                
-                osc.type = 'triangle';
-                osc.frequency.setValueAtTime(300, this.ctx.currentTime);
-                osc.frequency.linearRampToValueAtTime(900, this.ctx.currentTime + 0.25);
-                
-                gain.gain.setValueAtTime(0.25, this.ctx.currentTime);
-                gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 0.25);
-                
-                osc.connect(gain);
-                gain.connect(this.ctx.destination);
-                
-                osc.start();
-                osc.stop(this.ctx.currentTime + 0.25);
-            }
-
-            playShieldShieldSound() {
-                if (!this.ctx || this.isMuted) return;
-                const osc = this.ctx.createOscillator();
-                const gain = this.ctx.createGain();
-                
-                osc.type = 'sine';
-                osc.frequency.setValueAtTime(800, this.ctx.currentTime);
-                osc.frequency.exponentialRampToValueAtTime(200, this.ctx.currentTime + 0.3);
-                
-                gain.gain.setValueAtTime(0.3, this.ctx.currentTime);
-                gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 0.3);
-                
-                osc.connect(gain);
-                gain.connect(this.ctx.destination);
-                
-                osc.start();
-                osc.stop(this.ctx.currentTime + 0.3);
-            }
-
-            playSuperEatSound() {
-                if (!this.ctx || this.isMuted) return;
-                const osc = this.ctx.createOscillator();
-                const gain = this.ctx.createGain();
-                
-                osc.type = 'triangle';
-                osc.frequency.setValueAtTime(400, this.ctx.currentTime);
-                osc.frequency.exponentialRampToValueAtTime(1200, this.ctx.currentTime + 0.2);
-                
-                gain.gain.setValueAtTime(0.25, this.ctx.currentTime);
-                gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 0.2);
-                
-                osc.connect(gain);
-                gain.connect(this.ctx.destination);
-                
-                osc.start();
-                osc.stop(this.ctx.currentTime + 0.2);
-            }
-
-            playGameOverSound() {
-                if (!this.ctx || this.isMuted) return;
-                const osc = this.ctx.createOscillator();
-                const gain = this.ctx.createGain();
-                
-                osc.type = 'sawtooth';
-                osc.frequency.setValueAtTime(300, this.ctx.currentTime);
-                osc.frequency.exponentialRampToValueAtTime(80, this.ctx.currentTime + 0.4);
-                
-                gain.gain.setValueAtTime(0.3, this.ctx.currentTime);
-                gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 0.4);
-                
-                osc.connect(gain);
-                gain.connect(this.ctx.destination);
-                
-                osc.start();
-                osc.stop(this.ctx.currentTime + 0.4);
+        // Save data to LocalStorage
+        function persistBackendData() {
+            try {
+                localStorage.setItem('ry_portfolio_cms_data', JSON.stringify(appData));
+            } catch (e) {
+                console.error("Failed to save local storage", e);
             }
         }
 
-        const audio = new SoundFX();
+        // Render Frontend Dynamic Content
+        function renderFrontend() {
+            // Background Image
+            const body = document.getElementById('dynamic-body');
+            body.style.backgroundImage = `linear-gradient(to bottom, rgba(13, 13, 13, 0.82), rgba(13, 13, 13, 0.88)), url('${appData.profile.bgUrl}')`;
 
-        // Canvas & Context Setup
-        const canvas = document.getElementById('gameCanvas');
-        const ctx = canvas.getContext('2d');
+            // Nav & Profile Info
+            document.getElementById('nav-initials').textContent = appData.profile.initials || "RY";
+            document.getElementById('nav-name').textContent = appData.profile.fullname || "Richard Yostiandi";
+            document.getElementById('profile-img').src = appData.profile.photoUrl;
+            document.getElementById('profile-tagline').textContent = appData.profile.tagline;
+            document.getElementById('profile-bio').textContent = appData.profile.bio;
 
-        // UI Element References
-        const startScreen = document.getElementById('startScreen');
-        const gameOverScreen = document.getElementById('gameOverScreen');
-        const pauseScreen = document.getElementById('pauseScreen');
-        const startBtn = document.getElementById('startBtn');
-        const restartBtn = document.getElementById('restartBtn');
-        const resumeBtn = document.getElementById('resumeBtn');
-        const pauseBtn = document.getElementById('pauseBtn');
-        const muteBtn = document.getElementById('muteBtn');
-        const toggleControlModeBtn = document.getElementById('toggleControlModeBtn');
-        const controlModeText = document.getElementById('controlModeText');
-        const skinSelect = document.getElementById('skinSelect');
-        const powerupHud = document.getElementById('powerupHud');
-        const currentScoreEl = document.getElementById('currentScore');
-        const highScoreEl = document.getElementById('highScore');
-        const finalScoreEl = document.getElementById('finalScore');
-        const finalHighScoreEl = document.getElementById('finalHighScore');
-        const hungerBarEl = document.getElementById('hungerBar');
-        const gameOverReasonEl = document.getElementById('gameOverReason');
+            // Name splitting for Gold gradient effect
+            const nameParts = appData.profile.fullname.split(' ');
+            const firstName = nameParts[0] || '';
+            const lastName = nameParts.slice(1).join(' ') || '';
+            document.getElementById('profile-fullname').innerHTML = `${firstName} <span class="text-transparent bg-clip-text bg-gradient-to-r from-[#D4AF37] via-[#F3E5AB] to-[#AA7C11]">${lastName}</span>`;
 
-        // High Score Initialization from LocalStorage
-        const STORAGE_KEY = 'snake_xp_high_score_v1';
-        let highScore = parseInt(localStorage.getItem(STORAGE_KEY)) || 0;
-        highScoreEl.textContent = highScore;
+            // Visi & Misi
+            document.getElementById('visi-title').textContent = appData.visiMisi.title;
+            document.getElementById('visi-badge').textContent = appData.visiMisi.badge;
+            document.getElementById('visi-summary').textContent = appData.visiMisi.summary;
+            document.getElementById('misi1-title').innerHTML = `<i class="fa-solid fa-lightbulb"></i> ${appData.visiMisi.misi1Title}`;
+            document.getElementById('misi1-desc').textContent = appData.visiMisi.misi1Desc;
+            document.getElementById('misi2-title').innerHTML = `<i class="fa-solid fa-users"></i> ${appData.visiMisi.misi2Title}`;
+            document.getElementById('misi2-desc').textContent = appData.visiMisi.misi2Desc;
+            document.getElementById('visi-quote').innerHTML = `<i class="fa-solid fa-quote-left text-[#D4AF37]/40 mr-1"></i> "${appData.visiMisi.quote}"`;
 
-        // Game Configuration & State
-        let gameRunning = false;
-        let isPaused = false;
-        let animationFrameId = null;
-        let score = 0;
+            // Tags
+            const tagsContainer = document.getElementById('visi-tags-container');
+            tagsContainer.innerHTML = '';
+            (appData.visiMisi.tags || []).forEach(tag => {
+                const tagEl = document.createElement('span');
+                tagEl.className = 'px-3 py-1 rounded-md text-[11px] sm:text-xs bg-black/60 text-[#D4AF37] border border-[#D4AF37]/30 font-semibold flex items-center gap-1.5';
+                tagEl.innerHTML = `<i class="fa-solid fa-shield-halved text-[10px]"></i> ${tag.trim()}`;
+                tagsContainer.appendChild(tagEl);
+            });
 
-        // Control mode: 'hold' (Left click hold) or 'follow' (Always follow cursor)
-        let controlMode = 'hold'; 
-
-        // Mouse & Touch Input Tracking
-        const mouse = {
-            x: 0,
-            y: 0,
-            isPressed: false
-        };
-
-        // Power-ups and Combo Multiplier System
-        let activePowerups = {
-            magnet: 0,
-            shield: 0,
-            turbo: 0,
-            double: 0
-        };
-
-        let comboCount = 0;
-        let comboTimer = 0;
-        let floatingTexts = [];
-        let powerupItems = [];
-
-        // Snake Skins Definition
-        const SKINS = {
-            neon: { head: '#34d399', bodyHue: 150, glow: '#10b981' },
-            plasma: { head: '#f87171', bodyHue: 0, glow: '#ef4444' },
-            electric: { head: '#38bdf8', bodyHue: 200, glow: '#0284c7' },
-            gold: { head: '#fbbf24', bodyHue: 45, glow: '#d97706' }
-        };
-        let currentSkin = 'neon';
-
-        // Adjust Canvas size for high-DPI crisp rendering
-        function resizeCanvas() {
-            const rect = canvas.getBoundingClientRect();
-            canvas.width = rect.width;
-            canvas.height = rect.height;
-        }
-        window.addEventListener('resize', resizeCanvas);
-        resizeCanvas();
-
-        // Snake Parameters
-        const INITIAL_LENGTH = 15;
-        const MAX_LENGTH = 120;
-        const SEGMENT_SPACING = 8;
-        const BASE_RADIUS = 10;
-        let BASE_SNAKE_SPEED = 3.2;
-        const DECAY_RATE_PER_SECOND = 1.2;
-
-        let snake = {
-            x: 0,
-            y: 0,
-            angle: 0,
-            length: INITIAL_LENGTH,
-            history: []
-        };
-
-        let foods = [];
-        let particles = [];
-        let lastTime = 0;
-
-        // Spawn Power-up Item
-        function spawnPowerup() {
-            const margin = 40;
-            const types = [
-                { type: 'magnet', icon: '🧲', label: 'Magnet', color: '#a855f7' },
-                { type: 'shield', icon: '🛡️', label: 'Shield', color: '#3b82f6' },
-                { type: 'turbo', icon: '⚡', label: 'Turbo', color: '#f59e0b' },
-                { type: 'double', icon: '💎', label: '2X Poin', color: '#ec4899' }
-            ];
-            const pType = types[Math.floor(Math.random() * types.length)];
+            // Hobbies Cards
+            const hobbiesGrid = document.getElementById('hobbies-grid');
+            hobbiesGrid.innerHTML = '';
             
-            return {
-                x: margin + Math.random() * (canvas.width - margin * 2),
-                y: margin + Math.random() * (canvas.height - margin * 2),
-                radius: 12,
-                ...pType,
-                pulse: 0
+            appData.hobbies.forEach(item => {
+                const card = document.createElement('div');
+                card.className = "group bg-black/80 backdrop-blur-md rounded-2xl border border-[#D4AF37]/20 shadow-xl hover:shadow-2xl hover:shadow-[#D4AF37]/10 hover:-translate-y-2 hover:border-[#D4AF37]/60 transition-all duration-300 overflow-hidden flex flex-col justify-between";
+                
+                card.innerHTML = `
+                    <div>
+                        <div class="relative h-48 overflow-hidden bg-black">
+                            <img src="${item.image}" alt="${item.title}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 opacity-90 group-hover:opacity-100" onerror="this.src='https://images.unsplash.com/photo-1574629810360-7efbbe195018?auto=format&fit=crop&q=80&w=600'">
+                            <span class="absolute top-3 left-3 bg-black/80 backdrop-blur-md text-[#D4AF37] border border-[#D4AF37]/30 text-xs px-3 py-1 rounded-full font-medium">
+                                <i class="fa-solid ${item.icon || 'fa-star'} mr-1"></i> ${item.category}
+                            </span>
+                        </div>
+                        <div class="p-5 sm:p-6 text-left">
+                            <h3 class="text-lg font-bold text-white mb-2 group-hover:text-[#D4AF37] transition-colors">${item.title}</h3>
+                            <p class="text-xs sm:text-sm text-gray-300 leading-relaxed">${item.desc}</p>
+                        </div>
+                    </div>
+                    <div class="px-5 sm:px-6 pb-5 pt-3 border-t border-[#262626] flex items-center justify-between text-xs text-[#D4AF37]/80 font-semibold">
+                        <span><i class="fa-solid fa-tag mr-1"></i> ${item.badge}</span>
+                        <a href="${item.link || '#'}" target="${item.link && item.link.startsWith('http') ? '_blank' : '_self'}" class="group-hover:translate-x-1 transition-transform group-hover:text-[#D4AF37] flex items-center gap-1">
+                            Detail &rarr;
+                        </a>
+                    </div>
+                `;
+                hobbiesGrid.appendChild(card);
+            });
+
+            // Contact & Social Links
+            document.getElementById('contact-email-btn').href = `mailto:${appData.contact.email}`;
+            document.getElementById('contact-wa-btn').href = appData.contact.whatsapp;
+            document.getElementById('social-linkedin').href = appData.contact.linkedin;
+            document.getElementById('social-instagram').href = appData.contact.instagram;
+            document.getElementById('social-github').href = appData.contact.github;
+            document.getElementById('social-twitter').href = appData.contact.twitter;
+            document.getElementById('footer-copyright-name').textContent = appData.profile.fullname;
+        }
+
+        // Admin Auth Buttons & Login Logic
+        function handleAdminButtonClick() {
+            if (isAdminLoggedIn) {
+                populateAdminForms();
+                openModal('admin-dashboard-modal');
+            } else {
+                openModal('login-modal');
+            }
+        }
+
+        function handleLoginSubmit(e) {
+            e.preventDefault();
+            const u = document.getElementById('login-username').value.trim();
+            const p = document.getElementById('login-password').value.trim();
+
+            if (u === 'admin' && p === 'admin1234') {
+                isAdminLoggedIn = true;
+                closeModal('login-modal');
+                updateAdminNavUI();
+                populateAdminForms();
+                openModal('admin-dashboard-modal');
+                showToast("Login Berhasil! Selamat datang Admin.", "success");
+            } else {
+                showToast("Username atau Password salah!", "error");
+            }
+        }
+
+        function handleLogout() {
+            isAdminLoggedIn = false;
+            updateAdminNavUI();
+            closeModal('admin-dashboard-modal');
+            showToast("Anda telah keluar dari mode Admin.", "info");
+        }
+
+        function updateAdminNavUI() {
+            const btnText = document.getElementById('admin-nav-text');
+            const btnNav = document.getElementById('btn-admin-nav');
+            if (isAdminLoggedIn) {
+                btnText.textContent = "CMS Dashboard";
+                btnNav.className = "px-3.5 py-1.5 rounded-lg bg-[#D4AF37] text-black font-bold hover:brightness-110 transition-all flex items-center gap-1.5 shadow-md shadow-[#D4AF37]/20";
+            } else {
+                btnText.textContent = "Backend Admin";
+                btnNav.className = "px-3.5 py-1.5 rounded-lg bg-[#D4AF37]/10 border border-[#D4AF37]/40 text-[#D4AF37] font-bold hover:bg-[#D4AF37] hover:text-black transition-all flex items-center gap-1.5 shadow-md";
+            }
+        }
+
+        // Populate Admin Dashboard Forms with current state
+        function populateAdminForms() {
+            // Tab 1
+            document.getElementById('edit-fullname').value = appData.profile.fullname || '';
+            document.getElementById('edit-initials').value = appData.profile.initials || '';
+            document.getElementById('edit-tagline').value = appData.profile.tagline || '';
+            document.getElementById('edit-bio').value = appData.profile.bio || '';
+            document.getElementById('edit-photourl').value = appData.profile.photoUrl || '';
+            document.getElementById('edit-bgurl').value = appData.profile.bgUrl || '';
+
+            // Tab 2
+            document.getElementById('edit-visi-title').value = appData.visiMisi.title || '';
+            document.getElementById('edit-visi-badge').value = appData.visiMisi.badge || '';
+            document.getElementById('edit-visi-summary').value = appData.visiMisi.summary || '';
+            document.getElementById('edit-misi1-title').value = appData.visiMisi.misi1Title || '';
+            document.getElementById('edit-misi1-desc').value = appData.visiMisi.misi1Desc || '';
+            document.getElementById('edit-misi2-title').value = appData.visiMisi.misi2Title || '';
+            document.getElementById('edit-misi2-desc').value = appData.visiMisi.misi2Desc || '';
+            document.getElementById('edit-visi-quote').value = appData.visiMisi.quote || '';
+            document.getElementById('edit-visi-tags').value = (appData.visiMisi.tags || []).join(', ');
+
+            // Tab 3
+            renderAdminHobbiesList();
+
+            // Tab 4
+            document.getElementById('edit-contact-email').value = appData.contact.email || '';
+            document.getElementById('edit-contact-wa').value = appData.contact.whatsapp || '';
+            document.getElementById('edit-social-linkedin').value = appData.contact.linkedin || '';
+            document.getElementById('edit-social-instagram').value = appData.contact.instagram || '';
+            document.getElementById('edit-social-github').value = appData.contact.github || '';
+            document.getElementById('edit-social-twitter').value = appData.contact.twitter || '';
+        }
+
+        // Render Hobbies List in Admin Panel
+        function renderAdminHobbiesList() {
+            const list = document.getElementById('admin-hobbies-list');
+            list.innerHTML = '';
+
+            appData.hobbies.forEach(item => {
+                const el = document.createElement('div');
+                el.className = "bg-black/70 border border-[#D4AF37]/20 p-3 rounded-xl flex items-center justify-between gap-3";
+                el.innerHTML = `
+                    <div class="flex items-center gap-3 overflow-hidden">
+                        <img src="${item.image}" class="w-12 h-12 object-cover rounded-lg shrink-0 border border-[#D4AF37]/30" onerror="this.src='https://placehold.co/100x100'">
+                        <div class="truncate">
+                            <h5 class="font-bold text-white text-xs truncate">${item.title}</h5>
+                            <p class="text-[10px] text-gray-400 truncate"><i class="fa-solid ${item.icon}"></i> ${item.category} • Link: ${item.link || 'None'}</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-2 shrink-0">
+                        <button onclick="editHobbyModal('${item.id}')" class="p-2 rounded-lg bg-[#D4AF37]/10 text-[#D4AF37] hover:bg-[#D4AF37] hover:text-black transition-all">
+                            <i class="fa-solid fa-pen-to-square"></i>
+                        </button>
+                        <button onclick="deleteHobbyCard('${item.id}')" class="p-2 rounded-lg bg-red-900/30 text-red-400 hover:bg-red-600 hover:text-white transition-all">
+                            <i class="fa-solid fa-trash"></i>
+                        </button>
+                    </div>
+                `;
+                list.appendChild(el);
+            });
+        }
+
+        // Save All Data from Admin Forms
+        function saveAllBackendData() {
+            // Profile
+            appData.profile.fullname = document.getElementById('edit-fullname').value;
+            appData.profile.initials = document.getElementById('edit-initials').value;
+            appData.profile.tagline = document.getElementById('edit-tagline').value;
+            appData.profile.bio = document.getElementById('edit-bio').value;
+            appData.profile.photoUrl = document.getElementById('edit-photourl').value;
+            appData.profile.bgUrl = document.getElementById('edit-bgurl').value;
+
+            // Visi Misi
+            appData.visiMisi.title = document.getElementById('edit-visi-title').value;
+            appData.visiMisi.badge = document.getElementById('edit-visi-badge').value;
+            appData.visiMisi.summary = document.getElementById('edit-visi-summary').value;
+            appData.visiMisi.misi1Title = document.getElementById('edit-misi1-title').value;
+            appData.visiMisi.misi1Desc = document.getElementById('edit-misi1-desc').value;
+            appData.visiMisi.misi2Title = document.getElementById('edit-misi2-title').value;
+            appData.visiMisi.misi2Desc = document.getElementById('edit-misi2-desc').value;
+            appData.visiMisi.quote = document.getElementById('edit-visi-quote').value;
+            
+            const rawTags = document.getElementById('edit-visi-tags').value;
+            appData.visiMisi.tags = rawTags.split(',').map(t => t.trim()).filter(Boolean);
+
+            // Contact
+            appData.contact.email = document.getElementById('edit-contact-email').value;
+            appData.contact.whatsapp = document.getElementById('edit-contact-wa').value;
+            appData.contact.linkedin = document.getElementById('edit-social-linkedin').value;
+            appData.contact.instagram = document.getElementById('edit-social-instagram').value;
+            appData.contact.github = document.getElementById('edit-social-github').value;
+            appData.contact.twitter = document.getElementById('edit-social-twitter').value;
+
+            persistBackendData();
+            renderFrontend();
+            showToast("Semua data backend berhasil disimpan!", "success");
+        }
+
+        // Hobby Add/Edit Handlers
+        function openHobbyModal() {
+            document.getElementById('hobby-id').value = '';
+            document.getElementById('hobby-modal-title').textContent = 'Tambah Kartu Hobi Baru';
+            document.getElementById('hobby-input-title').value = '';
+            document.getElementById('hobby-input-category').value = '';
+            document.getElementById('hobby-input-icon').value = 'fa-star';
+            document.getElementById('hobby-input-badge').value = '';
+            document.getElementById('hobby-input-link').value = '#';
+            document.getElementById('hobby-input-image').value = '';
+            document.getElementById('hobby-input-desc').value = '';
+            openModal('hobby-card-modal');
+        }
+
+        function editHobbyModal(id) {
+            const item = appData.hobbies.find(h => h.id === id);
+            if (!item) return;
+
+            document.getElementById('hobby-id').value = item.id;
+            document.getElementById('hobby-modal-title').textContent = 'Edit Kartu Hobi';
+            document.getElementById('hobby-input-title').value = item.title;
+            document.getElementById('hobby-input-category').value = item.category;
+            document.getElementById('hobby-input-icon').value = item.icon;
+            document.getElementById('hobby-input-badge').value = item.badge;
+            document.getElementById('hobby-input-link').value = item.link || '#';
+            document.getElementById('hobby-input-image').value = item.image;
+            document.getElementById('hobby-input-desc').value = item.desc;
+            openModal('hobby-card-modal');
+        }
+
+        function handleSaveHobbyCard(e) {
+            e.preventDefault();
+            const id = document.getElementById('hobby-id').value;
+            
+            const cardObj = {
+                id: id || String(Date.now()),
+                title: document.getElementById('hobby-input-title').value,
+                category: document.getElementById('hobby-input-category').value,
+                icon: document.getElementById('hobby-input-icon').value || 'fa-star',
+                badge: document.getElementById('hobby-input-badge').value,
+                link: document.getElementById('hobby-input-link').value || '#',
+                image: document.getElementById('hobby-input-image').value,
+                desc: document.getElementById('hobby-input-desc').value
+            };
+
+            if (id) {
+                const index = appData.hobbies.findIndex(h => h.id === id);
+                if (index !== -1) appData.hobbies[index] = cardObj;
+            } else {
+                appData.hobbies.push(cardObj);
+            }
+
+            persistBackendData();
+            renderFrontend();
+            renderAdminHobbiesList();
+            closeModal('hobby-card-modal');
+            showToast("Kartu hobi berhasil diperbarui!", "success");
+        }
+
+        function deleteHobbyCard(id) {
+            showConfirmModal(
+                "Hapus Kartu Hobi",
+                "Apakah Anda yakin ingin menghapus kartu hobi ini dari tampilan frontend?",
+                () => {
+                    appData.hobbies = appData.hobbies.filter(h => h.id !== id);
+                    persistBackendData();
+                    renderFrontend();
+                    renderAdminHobbiesList();
+                    showToast("Kartu hobi berhasil dihapus.", "info");
+                }
+            );
+        }
+
+        function confirmResetData() {
+            showConfirmModal(
+                "Reset Semua Data",
+                "Apakah Anda yakin ingin mengembalikan seluruh konten ke versi awal (default)?",
+                () => {
+                    appData = JSON.parse(JSON.stringify(DEFAULT_DATA));
+                    persistBackendData();
+                    renderFrontend();
+                    populateAdminForms();
+                    showToast("Seluruh data dikembalikan ke versi standar.", "info");
+                }
+            );
+        }
+
+        // Tab Switcher
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.className = "tab-btn px-4 py-2 rounded-lg font-semibold bg-black/60 text-gray-300 border border-[#D4AF37]/20 hover:text-[#D4AF37] transition-all shrink-0";
+            });
+
+            document.getElementById(tabId).classList.remove('hidden');
+            
+            const activeBtn = document.getElementById(`btn-${tabId}`);
+            if (activeBtn) {
+                activeBtn.className = "tab-btn px-4 py-2 rounded-lg font-semibold bg-[#D4AF37] text-black transition-all shrink-0";
+            }
+        }
+
+        // Modal Helpers
+        function openModal(id) {
+            document.getElementById(id).classList.remove('hidden');
+        }
+
+        function closeModal(id) {
+            document.getElementById(id).classList.add('hidden');
+        }
+
+        // Custom Confirm Modal
+        function showConfirmModal(title, msg, onYes) {
+            document.getElementById('confirm-title').textContent = title;
+            document.getElementById('confirm-msg').textContent = msg;
+            
+            const modal = document.getElementById('confirm-modal');
+            const yesBtn = document.getElementById('btn-confirm-yes');
+            const cancelBtn = document.getElementById('btn-confirm-cancel');
+
+            modal.classList.remove('hidden');
+
+            yesBtn.onclick = () => {
+                modal.classList.add('hidden');
+                if (onYes) onYes();
+            };
+            cancelBtn.onclick = () => {
+                modal.classList.add('hidden');
             };
         }
 
-        function createFloatingText(x, y, text, color = '#38bdf8') {
-            floatingTexts.push({
-                x: x,
-                y: y,
-                text: text,
-                color: color,
-                alpha: 1,
-                vy: -1.2
-            });
-        }
-
-        // Food Generator
-        function spawnFood(isSuper = false) {
-            const margin = 30;
-            return {
-                x: margin + Math.random() * (canvas.width - margin * 2),
-                y: margin + Math.random() * (canvas.height - margin * 2),
-                radius: isSuper ? 10 : 6,
-                isSuper: isSuper,
-                value: isSuper ? 6 : 2.5,
-                scorePoints: isSuper ? 50 : 10,
-                pulse: Math.random() * Math.PI * 2
-            };
-        }
-
-        function initFoods(count = 8) {
-            foods = [];
-            for (let i = 0; i < count; i++) {
-                foods.push(spawnFood(Math.random() < 0.15));
-            }
-        }
-
-        // Particle System for Food Eating Burst Effect
-        function createParticles(x, y, color, count = 12) {
-            for (let i = 0; i < count; i++) {
-                const pAngle = Math.random() * Math.PI * 2;
-                const pSpeed = 1 + Math.random() * 4;
-                particles.push({
-                    x: x,
-                    y: y,
-                    vx: Math.cos(pAngle) * pSpeed,
-                    vy: Math.sin(pAngle) * pSpeed,
-                    radius: 2 + Math.random() * 3,
-                    color: color,
-                    alpha: 1,
-                    decay: 0.02 + Math.random() * 0.03
-                });
-            }
-        }
-
-        // Mouse Controls & Input listeners
-        function updateMousePos(evt) {
-            const rect = canvas.getBoundingClientRect();
-            mouse.x = evt.clientX - rect.left;
-            mouse.y = evt.clientY - rect.top;
-        }
-
-        canvas.addEventListener('mousemove', (e) => updateMousePos(e));
-        canvas.addEventListener('mousedown', (e) => {
-            if (e.button === 0) {
-                mouse.isPressed = true;
-                updateMousePos(e);
-            }
-        });
-
-        window.addEventListener('mouseup', (e) => {
-            if (e.button === 0) mouse.isPressed = false;
-        });
-
-        canvas.addEventListener('touchstart', (e) => {
-            mouse.isPressed = true;
-            if (e.touches.length > 0) {
-                const touch = e.touches[0];
-                const rect = canvas.getBoundingClientRect();
-                mouse.x = touch.clientX - rect.left;
-                mouse.y = touch.clientY - rect.top;
-            }
-        }, { passive: true });
-
-        canvas.addEventListener('touchmove', (e) => {
-            if (e.touches.length > 0) {
-                const touch = e.touches[0];
-                const rect = canvas.getBoundingClientRect();
-                mouse.x = touch.clientX - rect.left;
-                mouse.y = touch.clientY - rect.top;
-            }
-        }, { passive: true });
-
-        canvas.addEventListener('touchend', () => {
-            mouse.isPressed = false;
-        });
-
-        // Keyboard shortcuts (P = Pause, M = Mute)
-        window.addEventListener('keydown', (e) => {
-            if (e.key === 'p' || e.key === 'P' || e.key === 'Escape') {
-                togglePause();
-            }
-        });
-
-        function togglePause() {
-            if (!gameRunning) return;
-            isPaused = !isPaused;
-            if (isPaused) {
-                pauseScreen.classList.remove('hidden');
-            } else {
-                pauseScreen.classList.add('hidden');
-                lastTime = performance.now();
-                requestAnimationFrame(gameLoop);
-            }
-        }
-
-        // UI Event Listeners for Controls
-        toggleControlModeBtn.addEventListener('click', () => {
-            if (controlMode === 'hold') {
-                controlMode = 'follow';
-                controlModeText.textContent = 'Ikuti Kursor';
-                toggleControlModeBtn.classList.add('active');
-            } else {
-                controlMode = 'hold';
-                controlModeText.textContent = 'Tahan Klik';
-                toggleControlModeBtn.classList.remove('active');
-            }
-        });
-
-        muteBtn.addEventListener('click', () => {
-            audio.isMuted = !audio.isMuted;
-            if (audio.isMuted) {
-                muteBtn.textContent = '🔇 Suara: MATI';
-                muteBtn.classList.remove('active');
-            } else {
-                muteBtn.textContent = '🔊 Suara: AKTIF';
-                muteBtn.classList.add('active');
-            }
-        });
-
-        skinSelect.addEventListener('change', (e) => {
-            currentSkin = e.target.value;
-        });
-
-        pauseBtn.addEventListener('click', () => togglePause());
-        resumeBtn.addEventListener('click', () => togglePause());
-
-        function updatePowerupHUD() {
-            powerupHud.innerHTML = '';
-            if (activePowerups.magnet > 0) {
-                powerupHud.innerHTML += `<div class="powerup-badge" style="border-color: #a855f7;">🧲 Magnet (${Math.ceil(activePowerups.magnet)}s)</div>`;
-            }
-            if (activePowerups.shield > 0) {
-                powerupHud.innerHTML += `<div class="powerup-badge" style="border-color: #3b82f6;">🛡️ Shield (Aktif)</div>`;
-            }
-            if (activePowerups.turbo > 0) {
-                powerupHud.innerHTML += `<div class="powerup-badge" style="border-color: #f59e0b;">⚡ Turbo (${Math.ceil(activePowerups.turbo)}s)</div>`;
-            }
-            if (activePowerups.double > 0) {
-                powerupHud.innerHTML += `<div class="powerup-badge" style="border-color: #ec4899;">💎 2X Poin (${Math.ceil(activePowerups.double)}s)</div>`;
-            }
-        }
-
-        function resetGame() {
-            snake.x = canvas.width / 2;
-            snake.y = canvas.height / 2;
-            snake.angle = 0;
-            snake.length = INITIAL_LENGTH;
-            snake.history = [];
-
-            for (let i = 0; i < INITIAL_LENGTH * SEGMENT_SPACING; i++) {
-                snake.history.push({
-                    x: snake.x - i * Math.cos(snake.angle),
-                    y: snake.y - i * Math.sin(snake.angle)
-                });
-            }
-
-            score = 0;
-            comboCount = 0;
-            comboTimer = 0;
-            activePowerups = { magnet: 0, shield: 0, turbo: 0, double: 0 };
-            updatePowerupHUD();
-
-            currentScoreEl.textContent = score;
-            hungerBarEl.style.width = '100%';
-
-            particles = [];
-            floatingTexts = [];
-            powerupItems = [];
-            initFoods(10);
-        }
-
-        function startGame() {
-            audio.init();
-            resetGame();
-            gameRunning = true;
-            isPaused = false;
-            startScreen.classList.add('hidden');
-            gameOverScreen.classList.add('hidden');
-            pauseScreen.classList.add('hidden');
-            lastTime = performance.now();
-            if (animationFrameId) cancelAnimationFrame(animationFrameId);
-            animationFrameId = requestAnimationFrame(gameLoop);
-        }
-
-        function gameOver(reason) {
-            gameRunning = false;
-            audio.playGameOverSound();
-
-            if (score > highScore) {
-                highScore = score;
-                localStorage.setItem(STORAGE_KEY, highScore);
-                highScoreEl.textContent = highScore;
-            }
-
-            finalScoreEl.textContent = Math.floor(score);
-            finalHighScoreEl.textContent = highScore;
-            gameOverReasonEl.textContent = reason;
-
-            gameOverScreen.classList.remove('hidden');
-        }
-
-        function update(deltaTime) {
-            if (!gameRunning || isPaused) return;
-
-            // 1. Timers for Active Powerups & Combo
-            if (activePowerups.magnet > 0) activePowerups.magnet -= deltaTime;
-            if (activePowerups.turbo > 0) activePowerups.turbo -= deltaTime;
-            if (activePowerups.double > 0) activePowerups.double -= deltaTime;
-
-            if (comboTimer > 0) {
-                comboTimer -= deltaTime;
-                if (comboTimer <= 0) comboCount = 0;
-            }
-
-            // Spawn powerup item periodically
-            if (powerupItems.length < 1 && Math.random() < 0.002) {
-                powerupItems.push(spawnPowerup());
-            }
-
-            updatePowerupHUD();
-
-            // 2. Decay mechanism: Tubuh menyusut perlahan seiring waktu
-            const currentDecay = DECAY_RATE_PER_SECOND * deltaTime;
-            snake.length -= currentDecay;
-
-            if (snake.length <= 1) {
-                snake.length = 0;
-                gameOver("Tubuh ular habis menyusut karena tidak makan!");
-                return;
-            }
-
-            // Update hunger / body size UI bar
-            const hungerPercentage = Math.max(0, Math.min(100, (snake.length / MAX_LENGTH) * 100));
-            hungerBarEl.style.width = `${hungerPercentage}%`;
-
-            // 3. Control Steering Logic
-            const shouldTurn = (controlMode === 'follow') || (controlMode === 'hold' && mouse.isPressed);
+        // Toast Engine
+        function showToast(message, type = 'info') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
             
-            if (shouldTurn) {
-                const dx = mouse.x - snake.x;
-                const dy = mouse.y - snake.y;
-                const targetAngle = Math.atan2(dy, dx);
+            let bgClass = "bg-[#141414] border-[#D4AF37] text-[#D4AF37]";
+            let icon = "fa-circle-check";
 
-                let diff = targetAngle - snake.angle;
-                while (diff < -Math.PI) diff += Math.PI * 2;
-                while (diff > Math.PI) diff -= Math.PI * 2;
-
-                const turnSpeed = 0.09;
-                snake.angle += diff * turnSpeed;
+            if (type === 'error') {
+                bgClass = "bg-[#1A0A0A] border-red-500 text-red-400";
+                icon = "fa-circle-xmark";
+            } else if (type === 'info') {
+                bgClass = "bg-[#141414] border-blue-400 text-blue-300";
+                icon = "fa-circle-info";
             }
 
-            // 4. Move Snake Head (Speed affected by Turbo power-up)
-            const currentSpeed = activePowerups.turbo > 0 ? BASE_SNAKE_SPEED * 1.6 : BASE_SNAKE_SPEED;
-            snake.x += Math.cos(snake.angle) * currentSpeed;
-            snake.y += Math.sin(snake.angle) * currentSpeed;
+            toast.className = `pointer-events-auto border px-4 py-3 rounded-xl shadow-2xl backdrop-blur-md text-xs font-semibold flex items-center gap-2.5 transition-all duration-300 transform translate-y-5 opacity-0 ${bgClass}`;
+            toast.innerHTML = `<i class="fa-solid ${icon} text-sm"></i> <span>${message}</span>`;
 
-            // 5. Collision with Walls (Protected if Shield powerup active)
-            if (snake.x < BASE_RADIUS || snake.x > canvas.width - BASE_RADIUS ||
-                snake.y < BASE_RADIUS || snake.y > canvas.height - BASE_RADIUS) {
-                
-                if (activePowerups.shield > 0) {
-                    activePowerups.shield = 0; // Consume shield
-                    audio.playShieldShieldSound();
-                    createFloatingText(snake.x, snake.y, "🛡️ SHIELD SAVED!", "#3b82f6");
-                    
-                    // Bounce snake angle away from wall
-                    if (snake.x < BASE_RADIUS) { snake.x = BASE_RADIUS + 2; snake.angle = Math.PI - snake.angle; }
-                    if (snake.x > canvas.width - BASE_RADIUS) { snake.x = canvas.width - BASE_RADIUS - 2; snake.angle = Math.PI - snake.angle; }
-                    if (snake.y < BASE_RADIUS) { snake.y = BASE_RADIUS + 2; snake.angle = -snake.angle; }
-                    if (snake.y > canvas.height - BASE_RADIUS) { snake.y = canvas.height - BASE_RADIUS - 2; snake.angle = -snake.angle; }
-                } else {
-                    gameOver("Ular menabrak dinding batas area permainan!");
-                    return;
-                }
-            }
+            container.appendChild(toast);
 
-            // Record head history position
-            snake.history.unshift({ x: snake.x, y: snake.y });
+            setTimeout(() => {
+                toast.classList.remove('translate-y-5', 'opacity-0');
+            }, 10);
 
-            const maxHistoryLength = Math.floor(snake.length * SEGMENT_SPACING);
-            if (snake.history.length > maxHistoryLength) {
-                snake.history.length = maxHistoryLength;
-            }
-
-            // 6. Magnet Power-Up effect (Pulls food towards snake)
-            foods.forEach(food => {
-                if (activePowerups.magnet > 0) {
-                    const distToHead = Math.hypot(snake.x - food.x, snake.y - food.y);
-                    if (distToHead < 180) {
-                        const mAngle = Math.atan2(snake.y - food.y, snake.x - food.x);
-                        food.x += Math.cos(mAngle) * 4;
-                        food.y += Math.sin(mAngle) * 4;
-                    }
-                }
-            });
-
-            // 7. Food Collisions & XP Eating
-            foods.forEach((food, index) => {
-                food.pulse += 0.05;
-                const dist = Math.hypot(snake.x - food.x, snake.y - food.y);
-
-                if (dist < BASE_RADIUS + food.radius + 2) {
-                    // Update Combo
-                    comboCount++;
-                    comboTimer = 1.8;
-
-                    const scoreMultiplier = (activePowerups.double > 0 ? 2 : 1) * (comboCount > 1 ? Math.min(4, comboCount * 0.5) : 1);
-                    const gainedPoints = Math.floor(food.scorePoints * scoreMultiplier);
-                    const gainedValue = food.value * (activePowerups.double > 0 ? 1.5 : 1);
-
-                    snake.length = Math.min(MAX_LENGTH, snake.length + gainedValue);
-                    score += gainedPoints;
-                    currentScoreEl.textContent = score;
-
-                    // Floating text indicator
-                    const comboText = comboCount > 1 ? `+${gainedPoints} (${comboCount}x Combo!)` : `+${gainedPoints}`;
-                    createFloatingText(food.x, food.y, comboText, food.isSuper ? '#38bdf8' : '#10b981');
-
-                    if (food.isSuper) {
-                        audio.playSuperEatSound();
-                        createParticles(food.x, food.y, '#38bdf8', 18);
-                    } else {
-                        audio.playEatSound(Math.min(1.8, 1 + comboCount * 0.08));
-                        createParticles(food.x, food.y, '#10b981', 10);
-                    }
-
-                    // Respawn food item
-                    foods[index] = spawnFood(Math.random() < 0.15);
-                }
-            });
-
-            // 8. Powerup Collisions
-            powerupItems.forEach((pItem, pIdx) => {
-                pItem.pulse += 0.05;
-                const dist = Math.hypot(snake.x - pItem.x, snake.y - pItem.y);
-                if (dist < BASE_RADIUS + pItem.radius + 4) {
-                    audio.playPowerupSound();
-                    createParticles(pItem.x, pItem.y, pItem.color, 20);
-                    createFloatingText(pItem.x, pItem.y, `${pItem.icon} ${pItem.label}!`, pItem.color);
-
-                    if (pItem.type === 'magnet') activePowerups.magnet = 8;
-                    if (pItem.type === 'shield') activePowerups.shield = 1;
-                    if (pItem.type === 'turbo') activePowerups.turbo = 6;
-                    if (pItem.type === 'double') activePowerups.double = 8;
-
-                    powerupItems.splice(pIdx, 1);
-                }
-            });
-
-            // 9. Update Floating Texts & Particles
-            floatingTexts.forEach((ft, idx) => {
-                ft.y += ft.vy;
-                ft.alpha -= 0.018;
-                if (ft.alpha <= 0) floatingTexts.splice(idx, 1);
-            });
-
-            particles.forEach((p, idx) => {
-                p.x += p.vx;
-                p.y += p.vy;
-                p.alpha -= p.decay;
-                if (p.alpha <= 0) particles.splice(idx, 1);
-            });
+            setTimeout(() => {
+                toast.classList.add('translate-y-5', 'opacity-0');
+                setTimeout(() => toast.remove(), 300);
+            }, 3500);
         }
 
-        function render() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-            // 1. Draw subtle neon grid background
-            ctx.strokeStyle = 'rgba(56, 189, 248, 0.04)';
-            ctx.lineWidth = 1;
-            const gridSize = 40;
-            for (let x = 0; x < canvas.width; x += gridSize) {
-                ctx.beginPath();
-                ctx.moveTo(x, 0);
-                ctx.lineTo(x, canvas.height);
-                ctx.stroke();
-            }
-            for (let y = 0; y < canvas.height; y += gridSize) {
-                ctx.beginPath();
-                ctx.moveTo(0, y);
-                ctx.lineTo(canvas.width, y);
-                ctx.stroke();
-            }
-
-            // 2. Draw Food XP Items
-            foods.forEach(food => {
-                ctx.save();
-                ctx.shadowBlur = food.isSuper ? 16 : 10;
-                ctx.shadowColor = food.isSuper ? '#38bdf8' : '#10b981';
-
-                const animatedRadius = food.radius + Math.sin(food.pulse) * 1.5;
-
-                ctx.beginPath();
-                ctx.arc(food.x, food.y, animatedRadius, 0, Math.PI * 2);
-                ctx.fillStyle = food.isSuper ? '#38bdf8' : '#10b981';
-                ctx.fill();
-
-                ctx.beginPath();
-                ctx.arc(food.x, food.y, animatedRadius * 0.4, 0, Math.PI * 2);
-                ctx.fillStyle = '#ffffff';
-                ctx.fill();
-
-                ctx.restore();
-            });
-
-            // 3. Draw Power-up Items
-            powerupItems.forEach(pItem => {
-                ctx.save();
-                ctx.shadowBlur = 14;
-                ctx.shadowColor = pItem.color;
-
-                const pRadius = pItem.radius + Math.sin(pItem.pulse) * 2;
-                ctx.beginPath();
-                ctx.arc(pItem.x, pItem.y, pRadius, 0, Math.PI * 2);
-                ctx.fillStyle = pItem.color;
-                ctx.fill();
-
-                ctx.font = '12px Segoe UI';
-                ctx.textAlign = 'center';
-                ctx.textBaseline = 'middle';
-                ctx.fillText(pItem.icon, pItem.x, pItem.y);
-
-                ctx.restore();
-            });
-
-            // 4. Draw Snake Body & Head with Selected Skin Style
-            const skinConfig = SKINS[currentSkin] || SKINS.neon;
-            const totalSegments = Math.floor(snake.length);
-
-            for (let i = totalSegments - 1; i >= 0; i--) {
-                const historyIdx = i * SEGMENT_SPACING;
-                if (historyIdx < snake.history.length) {
-                    const pos = snake.history[historyIdx];
-                    const progress = i / totalSegments;
-                    const radius = Math.max(3, BASE_RADIUS * (1 - progress * 0.5));
-
-                    ctx.save();
-                    ctx.shadowBlur = i === 0 ? 14 : 4;
-                    ctx.shadowColor = i === 0 ? skinConfig.glow : 'rgba(255,255,255,0.1)';
-
-                    ctx.beginPath();
-                    ctx.arc(pos.x, pos.y, radius, 0, Math.PI * 2);
-
-                    if (i === 0) {
-                        ctx.fillStyle = skinConfig.head;
-                    } else {
-                        ctx.fillStyle = `hsl(${skinConfig.bodyHue - progress * 30}, 85%, ${50 - progress * 15}%)`;
-                    }
-                    ctx.fill();
-                    ctx.restore();
-                }
-            }
-
-            // Draw Shield Aura if active
-            if (activePowerups.shield > 0 && snake.history.length > 0) {
-                const head = snake.history[0];
-                ctx.save();
-                ctx.strokeStyle = '#3b82f6';
-                ctx.lineWidth = 3;
-                ctx.shadowBlur = 15;
-                ctx.shadowColor = '#3b82f6';
-                ctx.beginPath();
-                ctx.arc(head.x, head.y, BASE_RADIUS + 8, 0, Math.PI * 2);
-                ctx.stroke();
-                ctx.restore();
-            }
-
-            // Draw Snake Eyes on Head
-            if (snake.history.length > 0) {
-                const head = snake.history[0];
-                ctx.save();
-                ctx.translate(head.x, head.y);
-                ctx.rotate(snake.angle);
-
-                ctx.fillStyle = '#ffffff';
-                ctx.beginPath();
-                ctx.arc(4, -4, 3, 0, Math.PI * 2);
-                ctx.arc(4, 4, 3, 0, Math.PI * 2);
-                ctx.fill();
-
-                ctx.fillStyle = '#060911';
-                ctx.beginPath();
-                ctx.arc(5, -4, 1.5, 0, Math.PI * 2);
-                ctx.arc(5, 4, 1.5, 0, Math.PI * 2);
-                ctx.fill();
-
-                ctx.restore();
-            }
-
-            // 5. Draw Particles Burst & Floating Texts
-            particles.forEach(p => {
-                ctx.save();
-                ctx.globalAlpha = p.alpha;
-                ctx.beginPath();
-                ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
-                ctx.fillStyle = p.color;
-                ctx.shadowBlur = 8;
-                ctx.shadowColor = p.color;
-                ctx.fill();
-                ctx.restore();
-            });
-
-            floatingTexts.forEach(ft => {
-                ctx.save();
-                ctx.globalAlpha = ft.alpha;
-                ctx.font = 'bold 13px Segoe UI';
-                ctx.fillStyle = ft.color;
-                ctx.shadowBlur = 6;
-                ctx.shadowColor = ft.color;
-                ctx.fillText(ft.text, ft.x, ft.y);
-                ctx.restore();
-            });
-
-            // 6. Visual Guide line when control mode is hold
-            if (controlMode === 'hold' && mouse.isPressed && gameRunning && !isPaused) {
-                ctx.save();
-                ctx.strokeStyle = 'rgba(56, 189, 248, 0.25)';
-                ctx.lineWidth = 1.5;
-                ctx.setLineDash([4, 4]);
-                ctx.beginPath();
-                ctx.moveTo(snake.x, snake.y);
-                ctx.lineTo(mouse.x, mouse.y);
-                ctx.stroke();
-                ctx.restore();
-            }
-        }
-
-        function gameLoop(time) {
-            const deltaTime = Math.min((time - lastTime) / 1000, 0.1);
-            lastTime = time;
-
-            if (!isPaused) {
-                update(deltaTime);
-                render();
-            }
-
-            if (gameRunning && !isPaused) {
-                animationFrameId = requestAnimationFrame(gameLoop);
-            }
-        }
-
-        // Button Event Listeners
-        startBtn.addEventListener('click', () => startGame());
-        restartBtn.addEventListener('click', () => startGame());
-
-        // Initial background render on load
-        resetGame();
-        render();
+        // Initialize App on Window Load
+        window.onload = function() {
+            loadBackendData();
+        };
     </script>
 </body>
 </html>
